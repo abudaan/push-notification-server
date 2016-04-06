@@ -18,9 +18,9 @@ app.post("/commit", function(req, res) {
     data = req.body
   }else{
     // github payload JSON
-    data = JSON.parse(req.body.payload)
+    //data = JSON.parse(req.body.payload)
   }
-  console.log(data)
+  console.log(req.body)
 
   res.send({ status: 'SUCCESS' })
 })

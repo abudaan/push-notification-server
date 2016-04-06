@@ -24,11 +24,8 @@ app.post('/commit', function (req, res) {
   if (req.body.object_kind) {
     // gitlab payload JSON
     data = req.body;
-  } else {
-    // github payload JSON
-    data = JSON.parse(req.body.payload);
-  }
-  console.log(data);
+  } else {}
+  console.log(req.body);
 
   res.send({ status: 'SUCCESS' });
 });
@@ -37,3 +34,6 @@ var port = process.env.PORT || 5000;
 
 app.listen(port);
 console.log('server listening at port ' + port);
+
+// github payload JSON
+//data = JSON.parse(req.body.payload)
