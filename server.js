@@ -19,7 +19,7 @@ app.listen(8080)
 
 app.post("/commit", function(req, res) {
 
-  let data
+  var data
 
   if(req.body.object_kind) {
     // gitlab payload JSON
