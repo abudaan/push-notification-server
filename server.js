@@ -1,27 +1,37 @@
-import express from 'express'
-import bodyParser from 'body-parser'
+'use strict';
 
-let app = express()
+var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
 
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({
+var _express = require('express');
+
+var _express2 = _interopRequireWildcard(_express);
+
+var _bodyParser = require('body-parser');
+
+var _bodyParser2 = _interopRequireWildcard(_bodyParser);
+
+var app = _express2['default']();
+
+app.use(_bodyParser2['default'].json());
+app.use(_bodyParser2['default'].urlencoded({
   extended: true
-}))
+}));
 
-app.listen(5000)
+app.post('/commit', function (req, res) {
 
-app.post("/commit", function(req, res) {
+  var data = undefined;
 
-  let data
-
-  if(req.body.object_kind) {
+  if (req.body.object_kind) {
     // gitlab payload JSON
-    data = req.body
-  }else{
+    data = req.body;
+  } else {
     // github payload JSON
-    data = JSON.parse(req.body.payload)
+    data = JSON.parse(req.body.payload);
   }
-  console.log(data)
+  console.log(data);
 
-  res.send({ status: 'SUCCESS' })
-})
+  res.send({ status: 'SUCCESS' });
+});
+
+app.listen(8080);
+console.log('server listening at port 8080');
