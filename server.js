@@ -1,14 +1,7 @@
-//import express from 'express'
-//import bodyParser from 'body-parser'
+import express from 'express'
+import bodyParser from 'body-parser'
 
-//let app = express()
-
-var express = require('express')
-var bodyParser = require('body-parser')
-
-//let app = express()
-var app = express()
-
+let app = express()
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({
@@ -19,7 +12,7 @@ app.listen(5000)
 
 app.post("/commit", function(req, res) {
 
-  var data
+  let data
 
   if(req.body.object_kind) {
     // gitlab payload JSON
