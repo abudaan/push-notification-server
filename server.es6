@@ -25,6 +25,7 @@ app.post("/commit", function(req, res) {
   res.send({ status: 'SUCCESS' })
 })
 
+let port = process.env.PORT || 5000;
 
-app.listen(8080)
-console.log('server listening at port 8080')
+app.listen(port)
+console.log(`server listening at port ${port}`)

@@ -1,7 +1,7 @@
 var querystring = require('querystring');
 var request = require('request');
 
-var url = 'http://localhost:8080/';
+var url = 'http://localhost:5000/';
 //var url = 'https://peaceful-brushlands-94865.herokuapp.com/';
 
 var github_commit = {
