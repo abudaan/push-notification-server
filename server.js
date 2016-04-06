@@ -15,7 +15,7 @@ app.use(bodyParser.urlencoded({
   extended: true
 }))
 
-app.listen(8080)
+app.listen(5000)
 
 app.post("/commit", function(req, res) {
 
