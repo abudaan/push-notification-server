@@ -7,8 +7,7 @@
     "start": "node server.js"
   },
   "babel": {
-    "plugins": [
-    ],
+    "plugins": [],
     "presets": [
       "es2015"
     ]
@@ -25,6 +24,7 @@
   "homepage": "https://github.com/abudaan/react-native-push-server#readme",
   "dependencies": {
     "body-parser": "^1.15.0",
-    "express": "^4.13.4"
+    "express": "^4.13.4",
+    "request": "^2.70.0"
   }
 }
