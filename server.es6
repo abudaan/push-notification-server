@@ -1,3 +1,4 @@
+import apns from 'apns'
 import express from 'express'
 import bodyParser from 'body-parser'
 import fetch from 'isomorphic-fetch'
@@ -6,6 +7,12 @@ import pg from 'pg'
 let app = express()
 let gcmUrl = 'https://gcm-http.googleapis.com/gcm/send'
 let gcmKey = 'AIzaSyD6GYalxuGLWy-oMvw3HixS_9ecs_RNFNI'
+let apnOptions = {
+  keyFile : "conf/key.pem",
+  certFile : "conf/cert.pem",
+  debug : true
+}
+let apnConnection
 
 
 app.use(bodyParser.json())
@@ -21,6 +28,11 @@ app.get('/', function(req, res){
 
 app.get('/db', function(req, res){
   pg.connect(process.env.DATABASE_URL, function(err, client, done){
+    if(!client){
+      done()
+      res.send(err)
+      return
+    }
     client.query('SELECT * FROM tokens', function(err, result){
       done()
       if(err){
@@ -36,6 +48,7 @@ app.get('/db', function(req, res){
 
 
 app.post('/token', function(req, res){
+  let os = req.body.os
   let token = req.body.token
   Object.keys(req.body).forEach(function(key){
     console.log(key, ':', req.body[key])
@@ -49,7 +62,7 @@ app.post('/token', function(req, res){
       }
       else{
         if(result.rowCount === 0){
-          client.query(`INSERT INTO tokens (token) VALUES ('${token}')`, function(err, result){
+          client.query(`INSERT INTO tokens (token, os) VALUES ('${token}', '${os}')`, function(err, result){
             if(err){
               console.error(err)
               res.send("Error " + err)
@@ -80,6 +93,7 @@ app.post('/commit', function(req, res) {
   let numReceivers = 0
   let numErrors = 0
 
+
   pg.connect(process.env.DATABASE_URL, function(err, client, done){
     client.query('SELECT * FROM tokens', function(err, result){
 
@@ -92,21 +106,13 @@ app.post('/commit', function(req, res) {
           numReceivers++
           let token = row.token
           tokens.push(token)
-
-          promises.push(fetch(gcmUrl,{
-            method: 'POST',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-              'Authorization': `key=${gcmKey}`
-            },
-            body: JSON.stringify({
-              to: token,
-              data: {
-                message
-              }
-            })
-          }))
+          console.log(row.os)
+          if(row.os === 'android'){
+            promises.push(sendToGCM(token, message))
+          }else if(row.os === 'ios'){
+            // promises.push(sendToAPN(token, message))
+            sendToAPN(token, message)
+          }
         })
 
         Promise.all(promises).then(
@@ -136,6 +142,34 @@ app.post('/commit', function(req, res) {
   })
 })
 
+function sendToGCM(token, message){
+  return fetch(gcmUrl,{
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': `key=${gcmKey}`
+    },
+    body: JSON.stringify({
+      to: token,
+      data: {
+        message
+      }
+    })
+  })
+}
+
+function sendToAPN(token, message){
+  //return new Promise()
+  let notification = new apns.Notification()
+  notification.payload = message
+  notification.badge = 1
+  notification.sound = "dong.aiff"
+  notification.alert = "Hello World!"
+  notification.device = new apns.Device(token)
+  apnConnection.sendNotification(notification)
+  console.log(notification)
+}
 
 // push notification to topic
 app.post("/commit2", function(req, res) {
@@ -179,10 +213,19 @@ app.post("/commit2", function(req, res) {
 
 
 let port = process.env.PORT || 5000;
-
 app.listen(port)
+// open APN connection
+apnConnection = new apns.Connection(apnOptions)
+apnConnection.errorCallback = function(error){
+  console.log(error)
+}
+
 console.log(`server listening at port ${port}`)
 
+process.on('exit', function (){
+  apnConnection = null
+  console.log('Goodbye!')
+})
 
 
 /*

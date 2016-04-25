@@ -29,7 +29,6 @@ fetch(url, {
   }
 )
 .then((response) => {
-  console.log('asdasd')
   return response.json()
 })
 .then((data) => {
@@ -38,7 +37,7 @@ fetch(url, {
 
 
 function checkStatus(response) {
-  console.log(response.status)
+  //console.log(response.status)
   if(response.status >= 200 && response.status < 300) {
     return response
   }else{
