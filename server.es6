@@ -1,4 +1,4 @@
-import apns from 'apns'
+import apn from 'apn'
 import express from 'express'
 import bodyParser from 'body-parser'
 import fetch from 'isomorphic-fetch'
@@ -8,9 +8,9 @@ let app = express()
 let gcmUrl = 'https://gcm-http.googleapis.com/gcm/send'
 let gcmKey = 'AIzaSyD6GYalxuGLWy-oMvw3HixS_9ecs_RNFNI'
 let apnOptions = {
-  keyFile : "conf/key.pem",
-  certFile : "conf/cert.pem",
-  debug : true
+  // both the key and the cerficate are in the .pem file so we can use the same file for both key and certificate
+  key: "conf/cert.pem",
+  cert: "conf/cert.pem",
 }
 let apnConnection
 
@@ -55,6 +55,11 @@ app.post('/token', function(req, res){
   })
 
   pg.connect(process.env.DATABASE_URL, function(err, client, done){
+    if(!client){
+      done()
+      res.send(err)
+      return
+    }
     // check if this token has already been stored, if not -> store it
     client.query(`SELECT id FROM tokens WHERE token='${token}';`, function(err, result){
       if(err){
@@ -95,6 +100,11 @@ app.post('/commit', function(req, res) {
 
 
   pg.connect(process.env.DATABASE_URL, function(err, client, done){
+    if(!client){
+      done()
+      res.send(err)
+      return
+    }
     client.query('SELECT * FROM tokens', function(err, result){
 
       if(err){
@@ -142,6 +152,7 @@ app.post('/commit', function(req, res) {
   })
 })
 
+
 function sendToGCM(token, message){
   return fetch(gcmUrl,{
     method: 'POST',
@@ -159,16 +170,17 @@ function sendToGCM(token, message){
   })
 }
 
+
 function sendToAPN(token, message){
-  //return new Promise()
-  let notification = new apns.Notification()
-  notification.payload = message
+  let device = new apn.Device(token)
+  let notification = new apn.Notification()
+  notification.expiry = Math.floor(Date.now() / 1000) + 3600
+  notification.payload = {message}
   notification.badge = 1
   notification.sound = "dong.aiff"
-  notification.alert = "Hello World!"
-  notification.device = new apns.Device(token)
-  apnConnection.sendNotification(notification)
-  console.log(notification)
+  notification.alert = message
+  apnConnection.pushNotification(notification, device)
+  //console.log(notification, device)
 }
 
 // push notification to topic
@@ -214,13 +226,12 @@ app.post("/commit2", function(req, res) {
 
 let port = process.env.PORT || 5000;
 app.listen(port)
-// open APN connection
-apnConnection = new apns.Connection(apnOptions)
-apnConnection.errorCallback = function(error){
-  console.log(error)
-}
-
 console.log(`server listening at port ${port}`)
+
+// open APN connection
+apnConnection = new apn.Connection(apnOptions)
+//console.log(apnConnection)
+
 
 process.on('exit', function (){
   apnConnection = null
