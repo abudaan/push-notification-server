@@ -13,20 +13,22 @@ connection.on('error', (e) => {
 })
 
 connection.on('transmitted', (notification, device) => {
-  console.log('TRANS')
-  console.log(notification)
-  console.log(device)
+  //console.log('TRANS')
+  //console.log(notification)
+  //console.log(device)
+  console.log(device.toString('hex'))
 })
 
 connection.on('completed', (data) => {
-  console.log('COMPLETED', data)
+  //console.log('COMPLETED', data)
 })
 
 connection.on('transmissionError', (errorCode, notification, device) => {
-  console.log('TRANS ERR')
-  console.log(notification)
-  console.log(device)
-  console.log(errorCode)
+  //console.log('TRANS ERR')
+  //console.log(notification)
+  //console.log(device)
+  //console.log(errorCode)
+  console.log(errorCode, device.toString())
 })
 
 
@@ -48,7 +50,7 @@ notification.alert = 'Wake up!'
 notification.payload = {message: 'time to wake up 318'}
 connection.pushNotification(notification, device)
 
-device = new apn.Device("aap")
+device = new apn.Device("wrong_token")
 notification = new apn.Notification()
 //notification.expiry = Math.floor(Date.now() / 1000) + 3600
 notification.alert = "Wake up!"
