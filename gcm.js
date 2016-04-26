@@ -24,8 +24,9 @@ function pushNotifications(devices, message){
     .then(responses => {
       //console.log('responses', responses)
       responses.forEach((response, i) => {
+        console.log(response.body)
         if(response.ok){
-          console.log(response.statusText)
+          //asda
         }else{
           invalidTokens.push(tokens[i])
         }
@@ -37,6 +38,7 @@ function pushNotifications(devices, message){
 
 
 function sendToGCM(token, message){
+  console.log('gcm sent to', token)
   return fetch(gcmUrl, {
     method: 'POST',
     headers: {

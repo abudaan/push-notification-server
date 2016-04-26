@@ -30,32 +30,34 @@ function storeToken(data){
     console.log(key, ':', data[key])
   })
 
-  pg.connect(process.env.DATABASE_URL, function(error, client, done){
-    if(error !== null){
-      done()
-      resolve('Error ' + error)
-    }
-    // check if this token has already been stored, if not -> store it
-    client.query(`SELECT id FROM tokens WHERE token='${token}';`, function(error, result){
-      if(error){
-        console.error(error)
+  return new Promise(function(resolve, reject){
+    pg.connect(process.env.DATABASE_URL, function(error, client, done){
+      if(error !== null){
+        done()
+        resolve('Error ' + error)
       }
-      else{
-        if(result.rowCount === 0){
+      // check if this token has already been stored, if not -> store it
+      client.query(`SELECT id FROM tokens WHERE token='${token}';`, function(error, result){
+        if(error){
+          console.error(error)
+          reject(error)
+        }else if(result.rowCount === 0){
           client.query(`INSERT INTO tokens (token, os) VALUES ('${token}', '${os}')`, function(error, result){
             if(error){
-              console.error(error)
-              return 'Error ' + error
+              console.log(error)
+              reject({error})
             }else{
-              return {results: result}
+              resolve({results: result})
             }
           })
         }else{
-          console.log(`token already stored in database: ${token}`)
+          let message = `token already stored in database: ${token}`
+          console.log(message)
+          resolve({message})
         }
-      }
+      })
+      done()
     })
-    done()
   })
 }
 
