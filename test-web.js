@@ -1,24 +1,22 @@
 import fetch from 'isomorphic-fetch'
+import {status, json} from './fetch-helpers'
 
 let url = 'http://localhost:5000'
 
 
 document.addEventListener('DOMContentLoaded', function(){
-  let btnCommit = document.getElementById('commit')
+  let btnPushNotification = document.getElementById('push-notification')
   let btnStoreToken = document.getElementById('store-token')
-  let btnRemoveTokens = document.getElementById('remove-tokens')
 
-  btnCommit.addEventListener('click', sendCommit)
+  btnPushNotification.addEventListener('click', pushNotification)
   btnStoreToken.addEventListener('click', storeToken)
-  btnRemoveTokens.addEventListener('click', removeTokens)
 })
 
 
 function storeToken(){
-  let payload =
-  {
-    token: 'justanotherbullshittoken-2',
-    os: 'android'
+  let payload = {
+    token: '2735aca631c33162d49c80195e74fa90a3baafca55b257dfcea3dae3874d889c',
+    os: 'ios'
   }
 
   fetch(url + '/token', {
@@ -29,29 +27,19 @@ function storeToken(){
     },
     body: JSON.stringify(payload)
   })
-  .then(
-    checkStatus,
-    (error) => {
-      console.log('e', error)
-      return
-    }
-  )
-  .then((response) => {
-    console.log(response.body.error)
-    return response.json()
-  })
-  .then((data) => {
+  .then(status)
+  .then(json)
+  .then(data => {
     console.log(data)
   })
+  .catch(error => {
+    console.log(error)
+  })
 }
 
-function removeTokens(){
-}
 
-
-function sendCommit(){
-  let payload =
-  {
+function pushNotification(){
+  let payload ={
     sender: {
       login: 'abudaan'
     },
@@ -69,30 +57,13 @@ function sendCommit(){
     },
     body: JSON.stringify(payload)
   })
-  .then(
-    checkStatus,
-    (error) => {
-      console.log('e', error)
-      return
-    }
-  )
-  .then((response) => {
-    console.log(response.body.error)
-    return response.json()
-  })
-  .then((data) => {
+  .then(status)
+  .then(json)
+  .then(data => {
     console.log(data)
   })
+  .catch(error => {
+    console.log(error)
+  })
 }
 
-
-function checkStatus(response) {
-  //console.log(response.status)
-  if(response.status >= 200 && response.status < 300) {
-    return response
-  }else{
-    let error = new Error(response.statusText)
-    error.response = response
-    throw error
-  }
-}

@@ -16,43 +16,42 @@ Status Codes & Meanings
 */
 
 import apn from 'apn'
+import database from './database'
 
-
-let options = {
-  // both the key and the certificate are in the .pem file so we can use the same file for both key and certificate
-  key: 'conf/cert.pem',
-  cert: 'conf/cert.pem',
-}
 let connection
-let invalidTokens
+let notification
+let iosDevices
+let currentDevice
+let resolveCallback
 
-
-function start(){
+function start(options){
   // open APN connection
   connection = new apn.Connection(options)
   //console.log(connection)
 
   connection.on('error', (e) => {
-    console.log('ERROR', e)
+    console.log('error', e)
+    pushNext()
   })
 
   connection.on('transmitted', (notification, device) => {
-    //console.log('TRANS')
+    console.log('transmitted', device.token)
     //console.log(notification)
     //console.log(device)
   })
 
   connection.on('completed', (data) => {
-    //console.log('COMPLETED', data)
+    console.log('completed', data)
+    pushNext()
   })
 
   connection.on('transmissionError', (errorCode, notification, device) => {
-    //console.log('TRANS ERR')
+    //console.log('transmissionError')
     //console.log(notification)
     //console.log(device)
-    //console.log(errorCode)
+    console.log('ERROR', errorCode, device.toString())
     if(errorCode === 8 || errorCode === 5){
-      invalidTokens.push(device.toString)
+      database.removeTokens([device.toString()])
     }
   })
 }
@@ -60,34 +59,72 @@ function start(){
 
 function pushNotifications(devices, message){
 
-  return new Promise(resolve => {
-    let notification = new apn.Notification()
-    notification.expiry = Math.floor(Date.now() / 1000) + 3600
-    notification.payload = {message}
-    notification.badge = 1
-    notification.sound = 'dong.aiff'
-    notification.alert = message
+  iosDevices = []
 
-    invalidTokens = []
-
-    for(let device of devices){
-      if(device.os !== 'ios'){
+  for(let device of devices){
+    if(device.os === 'ios'){
+      let token = device.token
+      if(checkHex(token) === false){
+        console.log(`token is not hex: ${token}`)
+        database.removeTokens([token])
         continue
       }
-      //console.log('apn', device.token)
-
-      device = new apn.Device(device.token)
-      connection.pushNotification(notification, device)
-      //console.log(notification, device)
+      if(token.length !== 64){
+        console.log(`token is not valid: ${token}`)
+        database.removeTokens([token])
+        continue
+      }
+      console.log('apn', token)
+      iosDevices.push(new apn.Device(token))
+    }else{
+      continue
     }
-    resolve(invalidTokens)
+  }
+
+  if(iosDevices.length === 0){
+    console.log('resolve')
+    return Promise.resolve([])
+  }
+
+  notification = new apn.Notification()
+  notification.expiry = Math.floor(Date.now() / 1000) + 3600
+  notification.payload = {message}
+  notification.badge = 1
+  notification.sound = 'dong.aiff'
+  notification.alert = message
+
+  currentDevice = -1
+
+  return new Promise(function(resolve){
+//  connection.pushNotification(notification, iosDevices)
+    resolveCallback = resolve
+    //console.log(currentDevice, iosDevices.length)
+    pushNext()
   })
+}
+
+
+function pushNext(){
+  currentDevice++
+  //console.log(currentDevice, iosDevices.length, iosDevices[currentDevice])
+  if(currentDevice >= iosDevices.length){
+    resolveCallback([])
+  }else{
+    connection.pushNotification(notification, iosDevices[currentDevice])
+  }
 }
 
 
 function stop(){
   // is this really necessary?
   connection = null
+}
+
+function checkHex(string){
+  let re = /[0-9A-Fa-f]{6}/g
+  return re.test(string)
+  //let hex = parseInt(string, 16)
+  //return (hex.toString(16) === string.toLowerCase())
 }
 
 export default {

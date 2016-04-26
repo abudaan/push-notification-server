@@ -54,6 +54,7 @@ app.post('/commit', function(req, res) {
         apn.pushNotifications(tokens, message)
       ])
       .then(result => {
+        console.log('RESULT')
         let invalidTokens = [...result[0], ...result[1]]
         console.log(invalidTokens)
         let numErrors = invalidTokens.length
@@ -77,11 +78,19 @@ app.post('/remove_tokens', function(req, res){
 })
 
 
-let port = process.env.PORT || 5000
-app.listen(port)
-apn.start()
-console.log(`server listening at port ${port}`)
+function start(){
+  apn.start({
+    // both the key and the certificate are in the .pem file so we can use the same file for both key and certificate
+    key: 'conf/cert.pem',
+    cert: 'conf/cert.pem',
+  })
+  gcm.start('AIzaSyD6GYalxuGLWy-oMvw3HixS_9ecs_RNFNI')
 
+  let port = process.env.PORT || 5000
+  app.listen(port)
+  console.log(`server listening at port ${port}`)
+}
+start()
 
 process.on('exit', function (){
   apn.stop()

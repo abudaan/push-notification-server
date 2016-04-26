@@ -1,9 +1,9 @@
 import fetch from 'isomorphic-fetch'
+import {status, json} from './fetch-helpers'
 
-let url = 'http://localhost:5000/commit'
+let url = 'http://localhost:5000'
 
-let payload =
-{
+let payload = {
   sender: {
     login: 'abudaan'
   },
@@ -13,37 +13,16 @@ let payload =
   }
 }
 
-fetch(url, {
+fetch(url + '/commit', {
   method: 'POST',
   headers: {
     'Accept': 'application/json',
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
   },
   body: JSON.stringify(payload)
 })
-.then(
-  checkStatus,
-  (error) => {
-    console.log('e', error)
-    return
-  }
-)
-.then((response) => {
-  console.log(response.body.error)
-  return response.json()
-})
+.then(status)
+.then(json)
 .then((data) => {
   console.log(data)
 })
-
-
-function checkStatus(response) {
-  //console.log(response.status)
-  if(response.status >= 200 && response.status < 300) {
-    return response
-  }else{
-    let error = new Error(response.statusText)
-    error.response = response
-    throw error
-  }
-}

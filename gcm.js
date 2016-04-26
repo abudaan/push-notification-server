@@ -1,7 +1,8 @@
 import fetch from 'isomorphic-fetch'
+import {status, json} from './fetch-helpers'
 
 let gcmUrl = 'https://gcm-http.googleapis.com/gcm/send'
-let gcmKey = 'AIzaSyD6GYalxuGLWy-oMvw3HixS_9ecs_RNFNI'
+let gcmKey
 let invalidTokens
 
 function pushNotifications(devices, message){
@@ -22,12 +23,9 @@ function pushNotifications(devices, message){
   return new Promise(resolve => {
     Promise.all(promises)
     .then(responses => {
-      //console.log('responses', responses)
       responses.forEach((response, i) => {
-        console.log(response.body)
-        if(response.ok){
-          //asda
-        }else{
+        //console.log(response.success, tokens[i])
+        if(response.success === 0){
           invalidTokens.push(tokens[i])
         }
       })
@@ -38,7 +36,6 @@ function pushNotifications(devices, message){
 
 
 function sendToGCM(token, message){
-  console.log('gcm sent to', token)
   return fetch(gcmUrl, {
     method: 'POST',
     headers: {
@@ -53,9 +50,21 @@ function sendToGCM(token, message){
       }
     })
   })
+  .then(status)
+  .then(json)
+  .then(data => {
+    return Promise.resolve(data)
+  })
+  .catch(error => {
+    console.log('sendToGCM', error, token)
+    return Promise.resolve(null)
+  })
 }
 
 
 export default {
+  start: function(key){
+    gcmKey = key
+  },
   pushNotifications
 }
