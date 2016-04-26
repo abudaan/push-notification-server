@@ -16,15 +16,15 @@ Status Codes & Meanings
 */
 
 import apn from 'apn'
-import database from './database'
 
 
 let options = {
-  // both the key and the cerficate are in the .pem file so we can use the same file for both key and certificate
-  key: "conf/cert.pem",
-  cert: "conf/cert.pem",
+  // both the key and the certificate are in the .pem file so we can use the same file for both key and certificate
+  key: 'conf/cert.pem',
+  cert: 'conf/cert.pem',
 }
 let connection
+let invalidTokens
 
 
 function start(){
@@ -52,7 +52,7 @@ function start(){
     //console.log(device)
     //console.log(errorCode)
     if(errorCode === 8 || errorCode === 5){
-      database.removeToken(device.toString())
+      invalidTokens.push(device.toString)
     }
   })
 }
@@ -60,27 +60,33 @@ function start(){
 
 function pushNotifications(devices, message){
 
-  let notification = new apn.Notification()
-  notification.expiry = Math.floor(Date.now() / 1000) + 3600
-  notification.payload = {message}
-  notification.badge = 1
-  notification.sound = "dong.aiff"
-  notification.alert = message
+  return new Promise(resolve => {
+    let notification = new apn.Notification()
+    notification.expiry = Math.floor(Date.now() / 1000) + 3600
+    notification.payload = {message}
+    notification.badge = 1
+    notification.sound = 'dong.aiff'
+    notification.alert = message
 
-  for(device of devices){
-    //console.log(device.os)
-    if(device.os !== 'ios'){
-      continue
+    invalidTokens = []
+
+    for(let device of devices){
+      if(device.os !== 'ios'){
+        continue
+      }
+      //console.log('apn', device.token)
+
+      device = new apn.Device(device.token)
+      connection.pushNotification(notification, device)
+      //console.log(notification, device)
     }
-
-    let device = new apn.Device(device.token)
-    connection.pushNotification(notification, device)
-    //console.log(notification, device)
-  }
+    resolve(invalidTokens)
+  })
 }
 
 
 function stop(){
+  // is this really necessary?
   connection = null
 }
 

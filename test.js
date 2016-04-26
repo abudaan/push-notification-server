@@ -29,6 +29,7 @@ fetch(url, {
   }
 )
 .then((response) => {
+  console.log(response.body.error)
   return response.json()
 })
 .then((data) => {

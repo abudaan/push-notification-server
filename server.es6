@@ -1,4 +1,3 @@
-
 import express from 'express'
 import bodyParser from 'body-parser'
 
@@ -18,9 +17,14 @@ app.get('/', function(req, res){
 })
 
 app.get('/db', function(req, res){
-  database.getTokens().then(tokens => {
-    res.send(tokens)
-  })
+  database.getTokens().then(
+    tokens => {
+      res.send(tokens)
+    },
+    error => {
+      res.send({error: error})
+    }
+  )
 })
 
 app.post('/token', function(req, res){
@@ -32,15 +36,29 @@ app.post('/commit', function(req, res) {
   let message = `new commit from ${data.sender.login} to repository ${data.repository.full_name} at ${new Date(data.repository.pushed_at).toString()}`
   console.log(message)
 
-  database.getTokens().then(tokens => {
-    //console.log(tokens)
-    //gcm.pushNotifications(tokens, message)//.then(result => res.send(result))
-    apn.pushNotifications(tokens, message)
-    res.send('ok')
-  })
-
+  database.getTokens().then(
+    tokens => {
+      Promise.all([
+        gcm.pushNotifications(tokens, message),
+        apn.pushNotifications(tokens, message)
+      ])
+      .then(result => {
+        let invalidTokens = [...result[0], ...result[1]]
+        console.log(invalidTokens)
+        let numErrors = invalidTokens.length
+        let numReceivers = tokens.length - numErrors
+        if(numErrors > 0){
+          database.removeTokens(invalidTokens)
+        }
+        res.send({numErrors, numReceivers})
+      })
+    },
+    error => {
+      res.send({error})
+      console.log(error)
+    }
+  )
 })
-
 
 
 let port = process.env.PORT || 5000;
@@ -66,9 +84,6 @@ function checkStatus(response) {
     throw error
   }
 }
-
-
-
 
 
 // push notification to topic
