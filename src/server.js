@@ -85,7 +85,10 @@ apn.start({
   cert: 'conf/cert.pem',
 })
 
-gcm.start('AIzaSyD6GYalxuGLWy-oMvw3HixS_9ecs_RNFNI')
+gcm.start({
+  key: 'conf/gcm.key', // should be a plain text file containing nothing but the key
+  url: 'https://gcm-http.googleapis.com/gcm/send' // not mandatory
+})
 
 let port = process.env.PORT || 5000
 app.listen(port)

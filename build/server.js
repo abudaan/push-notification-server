@@ -94,7 +94,10 @@ _apn2.default.start({
   cert: 'conf/cert.pem'
 });
 
-_gcm2.default.start('AIzaSyD6GYalxuGLWy-oMvw3HixS_9ecs_RNFNI');
+_gcm2.default.start({
+  key: 'conf/gcm.key', // should be a plain text file containing nothing but the key
+  url: 'https://gcm-http.googleapis.com/gcm/send' // not mandatory
+});
 
 var port = process.env.PORT || 5000;
 app.listen(port);

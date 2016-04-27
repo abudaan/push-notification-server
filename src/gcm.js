@@ -1,8 +1,10 @@
+import fs from 'fs'
 import fetch from 'isomorphic-fetch'
 import {status, json} from './fetch-helpers'
 import database from './database'
 
-let gcmUrl = 'https://gcm-http.googleapis.com/gcm/send'
+
+let gcmUrl
 let gcmKey
 
 function pushNotifications(devices, message){
@@ -64,8 +66,10 @@ function sendToGCM(token, message){
 
 
 export default {
-  start: function(key){
-    gcmKey = key
+  start: function(data){
+    gcmUrl = data.url || 'https://gcm-http.googleapis.com/gcm/send'
+    let buffer = fs.readFileSync(data.key)
+    gcmKey = buffer.toString()
   },
   pushNotifications
 }
