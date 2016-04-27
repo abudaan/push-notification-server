@@ -39,7 +39,7 @@ function storeToken(){
 
 
 function pushNotification(){
-  let payload ={
+  let payload = {
     sender: {
       login: 'abudaan'
     },

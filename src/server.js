@@ -57,6 +57,7 @@ app.post('/commit', function(req, res) {
     tokens => {
       gcm.pushNotifications(tokens, message)
       apn.pushNotifications(tokens, message)
+      res.send({message: `notification pushed to ${tokens.length} devices`})
     },
     error => res.send(error)
   )

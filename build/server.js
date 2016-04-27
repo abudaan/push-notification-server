@@ -68,6 +68,7 @@ app.post('/commit', function (req, res) {
   _database2.default.getTokens().then(function (tokens) {
     _gcm2.default.pushNotifications(tokens, message);
     _apn2.default.pushNotifications(tokens, message);
+    res.send({ message: 'notification pushed to ' + tokens.length + ' devices' });
   }, function (error) {
     return res.send(error);
   });
