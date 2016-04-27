@@ -4,10 +4,12 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "babel server.es6 > server.js && heroku local web",
+    "start": "heroku local web",
     "babel": "babel",
     "babel-node": "babel-node",
-    "watchweb": "watchify test-web.js -t babelify -o app.js --debug --verbose"
+    "build": "babel src -d build",
+    "watch": "babel --watch src -d build",
+    "watchtest": "watchify tests/src/test-web.js -t babelify -o tests/build/test-web.js --debug --verbose"
   },
   "babel": {
     "plugins": [

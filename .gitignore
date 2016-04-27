@@ -1,4 +1,6 @@
 node_modules/
 commands.txt
 conf/
+tests/build/
 .eslintrc
+gulpfile.js

@@ -26,23 +26,24 @@ app.get('/', function(req, res){
 app.get('/db', function(req, res){
   database.getTokens().then(
     tokens => {
-      let html = '<ul>'
+      let html = 'Stored tokens:<br><ul>'
       tokens.forEach(function(token){
         html += `<li>${token.id} : ${token.os} : ${token.token}</li>`
       })
       html += '</ul>'
       res.send(html)
     },
-    error => {
-      res.send({error: error})
-    }
+    error => res.send(error)
   )
 })
 
 
 app.post('/token', function(req, res){
   database.storeToken(req.body)
-  .then(result => res.send(result))
+  .then(
+    result => res.send(result),
+    error => res.send(error)
+  )
 })
 
 
@@ -57,10 +58,7 @@ app.post('/commit', function(req, res) {
       gcm.pushNotifications(tokens, message)
       apn.pushNotifications(tokens, message)
     },
-    error => {
-      res.send({error})
-      console.log(error)
-    }
+    error => res.send(error)
   )
 })
 
@@ -68,6 +66,10 @@ app.post('/commit', function(req, res) {
 app.post('/remove_tokens', function(req, res){
   let invalidTokens = req.body.tokens
   database.removeTokens(invalidTokens)
+  .then(
+    result => res.send(result),
+    error => res.send(error)
+  )
 })
 
 

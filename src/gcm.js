@@ -12,7 +12,7 @@ function pushNotifications(devices, message){
   let tokens = []
 
   for(let device of devices){
-    if(device.os !== 'android'){
+    if(device.service !== 'gcm'){
       continue
     }
     //console.log('gcm', device.token)

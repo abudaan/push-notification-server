@@ -1,1 +1,1 @@
-CREATE TABLE tokens(id SERIAL, os varchar(10), token varchar(255));
+CREATE TABLE tokens(id SERIAL, service varchar(3), token varchar(255));

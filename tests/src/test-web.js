@@ -15,8 +15,8 @@ document.addEventListener('DOMContentLoaded', function(){
 
 function storeToken(){
   let payload = {
-    token: '3735bca631c33162d49c80195e74fa90a3baafca55b257dfcea3dae3874d889f',
-    os: 'android'
+    token: '3735bca631b33162d49c80195e74fa90a3baafca55b257dfcea3dae3874d889f',
+    service: 'gcm' // or 'apn'
   }
 
   fetch(url + '/token', {

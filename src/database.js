@@ -6,11 +6,15 @@ function getTokens(){
     pg.connect(process.env.DATABASE_URL, function(error, client, done){
       if(error !== null){
         done()
+        error = error.toString()
+        console.error('[DATABASE]', error)
         reject({error})
       }else{
         client.query('SELECT * FROM tokens', function(error, result){
           done()
           if(error){
+            error = error.toString()
+            console.error('[DATABASE]', error)
             reject({error})
           }else{
             //console.log(result.command, result.rows)
@@ -24,8 +28,8 @@ function getTokens(){
 
 
 function storeToken(data){
-  let os = data.os
   let token = data.token
+  let service = data.service
   // Object.keys(data).forEach(function(key){
   //   console.log(key, ':', data[key])
   // })
@@ -34,20 +38,24 @@ function storeToken(data){
     pg.connect(process.env.DATABASE_URL, function(error, client, done){
       if(error !== null){
         done()
-        resolve({error})
+        error = error.toString()
+        console.error('[DATABASE]', error)
+        reject({error})
       }
       // check if this token has already been stored, if not -> store it
       client.query(`SELECT id FROM tokens WHERE token='${token}';`, function(error, result){
         if(error){
-          console.error(error)
+          error = error.toString()
+          console.error('[DATABASE]', error)
           reject({error})
         }else if(result.rowCount === 0){
-          client.query(`INSERT INTO tokens (token, os) VALUES ('${token}', '${os}')`, function(error, result){
+          client.query(`INSERT INTO tokens (token, service) VALUES ('${token}', '${service}')`, function(error, result){
             if(error){
-              console.log(error)
+              error = error.toString()
+              console.error('[DATABASE]', error)
               reject({error})
             }else{
-              let message = `new token stored ${os} | ${token}`
+              let message = `new token stored ${service} | ${token}`
               console.log('[DATABASE]', message)
               resolve({message})
             }
@@ -72,12 +80,14 @@ function removeTokens(...tokens){
     pg.connect(process.env.DATABASE_URL, function(error, client, done){
       if(error){
         done()
+        error = error.toString()
+        console.error('[DATABASE]', error)
         reject({error})
       }
       tokens.forEach(function(token){
         client.query(`DELETE FROM tokens WHERE token='${token}';`, function(error, result){
           if(error){
-            console.log('[DATABASE]', error)
+            console.error('[DATABASE]', error.toString())
           }else{
             console.log('[DATABASE] removed token', token)
             removedTokens.push(token)

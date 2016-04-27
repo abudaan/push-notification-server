@@ -20,7 +20,7 @@ import database from './database'
 
 let connection
 let notification
-let iosDevices
+let apnDevices
 let currentDevice
 
 function start(options){
@@ -58,10 +58,10 @@ function start(options){
 
 function pushNotifications(devices, message){
 
-  iosDevices = []
+  apnDevices = []
 
   for(let device of devices){
-    if(device.os === 'ios'){
+    if(device.service === 'apn'){
       let token = device.token
       if(checkHex(token) === false){
         console.log(`token is not hex: ${token}`)
@@ -74,13 +74,13 @@ function pushNotifications(devices, message){
         continue
       }
       // console.log('apn', token)
-      iosDevices.push(new apn.Device(token))
+      apnDevices.push(new apn.Device(token))
     }else{
       continue
     }
   }
 
-  if(iosDevices.length === 0){
+  if(apnDevices.length === 0){
     return
   }
 
@@ -98,9 +98,9 @@ function pushNotifications(devices, message){
 
 function pushNext(){
   currentDevice++
-  //console.log(currentDevice, iosDevices.length, iosDevices[currentDevice])
-  if(currentDevice < iosDevices.length){
-    let device = iosDevices[currentDevice]
+  //console.log(currentDevice, apnDevices.length, apnDevices[currentDevice])
+  if(currentDevice < apnDevices.length){
+    let device = apnDevices[currentDevice]
     console.log('[APN] sending to', device.toString())
     connection.pushNotification(notification, device)
   }
