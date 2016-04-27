@@ -1,13 +1,13 @@
 import fetch from 'isomorphic-fetch'
 import {status, json} from './fetch-helpers'
+import database from './database'
 
 let gcmUrl = 'https://gcm-http.googleapis.com/gcm/send'
 let gcmKey
-let invalidTokens
 
 function pushNotifications(devices, message){
 
-  invalidTokens = []
+  let invalidTokens = []
   let promises = []
   let tokens = []
 
@@ -20,22 +20,23 @@ function pushNotifications(devices, message){
     promises.push(sendToGCM(device.token, message))
   }
 
-  return new Promise(resolve => {
-    Promise.all(promises)
-    .then(responses => {
-      responses.forEach((response, i) => {
-        //console.log(response.success, tokens[i])
-        if(response.success === 0){
-          invalidTokens.push(tokens[i])
-        }
-      })
-      resolve(invalidTokens)
+  Promise.all(promises)
+  .then(responses => {
+    responses.forEach((response, i) => {
+      //console.log(response.success, tokens[i])
+      //console.log(response)
+      if(response.success !== 1){
+        invalidTokens.push(tokens[i])
+        console.log('[GCM] error', response.results[0].error, tokens[i])
+      }
     })
+    database.removeTokens(...invalidTokens)
   })
 }
 
 
 function sendToGCM(token, message){
+  console.log('[GCM] sending to', token)
   return fetch(gcmUrl, {
     method: 'POST',
     headers: {
@@ -56,7 +57,7 @@ function sendToGCM(token, message){
     return Promise.resolve(data)
   })
   .catch(error => {
-    console.log('sendToGCM', error, token)
+    console.log('[GCM] error', error, token)
     return Promise.resolve(null)
   })
 }

@@ -17,9 +17,11 @@ app.use(bodyParser.urlencoded({
   extended: true
 }))
 
+
 app.get('/', function(req, res){
   res.send('Hello World!')
 })
+
 
 app.get('/db', function(req, res){
   database.getTokens().then(
@@ -37,33 +39,23 @@ app.get('/db', function(req, res){
   )
 })
 
+
 app.post('/token', function(req, res){
   database.storeToken(req.body)
   .then(result => res.send(result))
 })
 
+
 app.post('/commit', function(req, res) {
   let data = req.body
   let message = `new commit from ${data.sender.login} to repository ${data.repository.full_name} at ${new Date(data.repository.pushed_at).toString()}`
-  console.log(message)
+  console.log('---')
+  console.log('[NOTIFICATION]', message)
 
   database.getTokens().then(
     tokens => {
-      Promise.all([
-        gcm.pushNotifications(tokens, message),
-        apn.pushNotifications(tokens, message)
-      ])
-      .then(result => {
-        console.log('RESULT')
-        let invalidTokens = [...result[0], ...result[1]]
-        console.log(invalidTokens)
-        let numErrors = invalidTokens.length
-        let numReceivers = tokens.length - numErrors
-        if(numErrors > 0){
-          database.removeTokens(invalidTokens)
-        }
-        res.send({numErrors, numReceivers})
-      })
+      gcm.pushNotifications(tokens, message)
+      apn.pushNotifications(tokens, message)
     },
     error => {
       res.send({error})
@@ -72,44 +64,32 @@ app.post('/commit', function(req, res) {
   )
 })
 
+
 app.post('/remove_tokens', function(req, res){
   let invalidTokens = req.body.tokens
   database.removeTokens(invalidTokens)
 })
 
 
-function start(){
-  apn.start({
-    // both the key and the certificate are in the .pem file so we can use the same file for both key and certificate
-    key: 'conf/cert.pem',
-    cert: 'conf/cert.pem',
-  })
-  gcm.start('AIzaSyD6GYalxuGLWy-oMvw3HixS_9ecs_RNFNI')
-
-  let port = process.env.PORT || 5000
-  app.listen(port)
-  console.log(`server listening at port ${port}`)
-}
-start()
-
 process.on('exit', function (){
   apn.stop()
   console.log('Goodbye!')
 })
 
+apn.start({
+  // both the key and the certificate are in the .pem file so we can use the same file for both key and certificate
+  key: 'conf/cert.pem',
+  cert: 'conf/cert.pem',
+})
+
+gcm.start('AIzaSyD6GYalxuGLWy-oMvw3HixS_9ecs_RNFNI')
+
+let port = process.env.PORT || 5000
+app.listen(port)
+console.log(`server listening at port ${port}`)
+
 
 /*
-function checkStatus(response) {
-  //console.log(response)
-  if(response.status >= 200 && response.status < 300) {
-    return response
-  }else{
-    let error = new Error(response.statusText)
-    error.response = response
-    throw error
-  }
-}
-
 
 // push notification to topic
 app.post("/commit2", function(req, res) {

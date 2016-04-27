@@ -47,14 +47,14 @@ function storeToken(data){
               console.log(error)
               reject({error})
             }else{
-              let message = `new token stored: ${os} : ${token}`
-              console.log(message)
+              let message = `new token stored ${os} | ${token}`
+              console.log('[DATABASE]', message)
               resolve({message})
             }
           })
         }else{
           let message = `token already stored in database: ${token}`
-          console.log(message)
+          console.log('[DATABASE]', message)
           resolve({message})
         }
       })
@@ -64,7 +64,7 @@ function storeToken(data){
 }
 
 
-function removeTokens(tokens){
+function removeTokens(...tokens){
 
   let removedTokens = []
 
@@ -77,8 +77,9 @@ function removeTokens(tokens){
       tokens.forEach(function(token){
         client.query(`DELETE FROM tokens WHERE token='${token}';`, function(error, result){
           if(error){
-            console.log(error)
+            console.log('[DATABASE]', error)
           }else{
+            console.log('[DATABASE] removed token', token)
             removedTokens.push(token)
           }
         })

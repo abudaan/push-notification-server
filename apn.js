@@ -22,7 +22,6 @@ let connection
 let notification
 let iosDevices
 let currentDevice
-let resolveCallback
 
 function start(options){
   // open APN connection
@@ -30,18 +29,18 @@ function start(options){
   //console.log(connection)
 
   connection.on('error', (e) => {
-    console.log('error', e)
+    console.log('APN error', e)
     pushNext()
   })
 
   connection.on('transmitted', (notification, device) => {
-    console.log('transmitted', device.token)
+    //console.log('transmitted', device.token)
     //console.log(notification)
     //console.log(device)
   })
 
   connection.on('completed', (data) => {
-    console.log('completed', data)
+    //console.log('completed', data)
     pushNext()
   })
 
@@ -49,9 +48,9 @@ function start(options){
     //console.log('transmissionError')
     //console.log(notification)
     //console.log(device)
-    console.log('ERROR', errorCode, device.toString())
+    console.log('[APN] error', errorCode, device.toString())
     if(errorCode === 8 || errorCode === 5){
-      database.removeTokens([device.toString()])
+      database.removeTokens(device.toString())
     }
   })
 }
@@ -66,15 +65,15 @@ function pushNotifications(devices, message){
       let token = device.token
       if(checkHex(token) === false){
         console.log(`token is not hex: ${token}`)
-        database.removeTokens([token])
+        database.removeTokens(token)
         continue
       }
       if(token.length !== 64){
         console.log(`token is not valid: ${token}`)
-        database.removeTokens([token])
+        database.removeTokens(token)
         continue
       }
-      console.log('apn', token)
+      // console.log('apn', token)
       iosDevices.push(new apn.Device(token))
     }else{
       continue
@@ -82,8 +81,7 @@ function pushNotifications(devices, message){
   }
 
   if(iosDevices.length === 0){
-    console.log('resolve')
-    return Promise.resolve([])
+    return
   }
 
   notification = new apn.Notification()
@@ -94,23 +92,17 @@ function pushNotifications(devices, message){
   notification.alert = message
 
   currentDevice = -1
-
-  return new Promise(function(resolve){
-//  connection.pushNotification(notification, iosDevices)
-    resolveCallback = resolve
-    //console.log(currentDevice, iosDevices.length)
-    pushNext()
-  })
+  pushNext()
 }
 
 
 function pushNext(){
   currentDevice++
   //console.log(currentDevice, iosDevices.length, iosDevices[currentDevice])
-  if(currentDevice >= iosDevices.length){
-    resolveCallback([])
-  }else{
-    connection.pushNotification(notification, iosDevices[currentDevice])
+  if(currentDevice < iosDevices.length){
+    let device = iosDevices[currentDevice]
+    console.log('[APN] sending to', device.toString())
+    connection.pushNotification(notification, device)
   }
 }
 
