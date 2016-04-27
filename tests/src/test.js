@@ -2,7 +2,8 @@ import fetch from 'isomorphic-fetch'
 import {status, json} from './fetch-helpers'
 
 
-let url = 'http://localhost:5000'
+//let url = 'http://localhost:5000'
+let url = 'https://dry-cliffs-65087.herokuapp.com'
 
 let payload = {
   sender: {

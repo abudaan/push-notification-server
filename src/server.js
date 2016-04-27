@@ -28,7 +28,7 @@ app.get('/db', function(req, res){
     tokens => {
       let html = 'Stored tokens:<br><ul>'
       tokens.forEach(function(token){
-        html += `<li>${token.id} : ${token.os} : ${token.token}</li>`
+        html += `<li>${token.id} : ${token.service} : ${token.token}</li>`
       })
       html += '</ul>'
       res.send(html)
