@@ -24,6 +24,8 @@ var gcmUrl = void 0;
 var gcmKey = void 0;
 
 function pushNotifications(devices, message) {
+  var topic = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
+
 
   var invalidTokens = [];
   var promises = [];
@@ -40,9 +42,13 @@ function pushNotifications(devices, message) {
       if (device.service !== 'gcm') {
         continue;
       }
-      //console.log('gcm', device.token)
+      //console.log('gcm', device.token, topic)
       tokens.push(device.token);
-      promises.push(sendToGCM(device.token, message));
+      if (topic === null) {
+        promises.push(sendToGCM(device.token, message));
+      } else {
+        promises.push(sendToGCM('/topics/$}' + topic, message));
+      }
     }
   } catch (err) {
     _didIteratorError = true;

@@ -47,9 +47,7 @@ app.post('/token', function(req, res){
 })
 
 
-app.post('/commit', function(req, res) {
-  let data = req.body
-  let message = `new commit from ${data.sender.login} to repository ${data.repository.full_name} at ${new Date(data.repository.pushed_at).toString()}`
+function postMessage(message, res){
   console.log('---')
   console.log('[NOTIFICATION]', message)
 
@@ -61,6 +59,18 @@ app.post('/commit', function(req, res) {
     },
     error => res.send(error)
   )
+}
+
+
+// test with: curl -X POST -H "Content-Type: application/json" -d '{"message" : "testing testing 1,2,3"}' http://localhost:5000/message
+app.post('/message', function(req, res) {
+  postMessage(req.body.message, res)
+})
+
+
+// test with: http://localhost:5000/message?message=testing testing 1,2,3
+app.get('/message', function(req, res){
+  postMessage(req.query.message, res)
 })
 
 
@@ -94,48 +104,3 @@ let port = process.env.PORT || 5000
 app.listen(port)
 console.log(`server listening at port ${port}`)
 
-
-/*
-
-// push notification to topic
-app.post("/commit2", function(req, res) {
-
-  let data = req.body
-  let message = `new commit from ${data.sender.login} to repository ${data.repository.full_name} at ${data.repository.pushed_at}`
-  let payload = {
-    to: '/topics/global',
-    data: {
-      message
-    }
-  }
-
-  fetch(gcmUrl, {
-    method: 'POST',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'Authorization': `key=${gcmKey}`
-    },
-    body: JSON.stringify(payload)
-  })
-  .then(
-    (response) => {
-      console.log(response.ok, response.statusText)
-      //response = checkStatus(response)
-    },
-    (error) => {
-      console.log(error)
-    }
-  )
-  .then((response) => {
-    return response.json()
-  })
-  .then((data) => {
-    console.log(data)
-  })
-
-  res.send({status: 'SUCCESS'})
-})
-
-
-*/

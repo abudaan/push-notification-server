@@ -7,7 +7,7 @@ import database from './database'
 let gcmUrl
 let gcmKey
 
-function pushNotifications(devices, message){
+function pushNotifications(devices, message, topic = null){
 
   let invalidTokens = []
   let promises = []
@@ -17,9 +17,13 @@ function pushNotifications(devices, message){
     if(device.service !== 'gcm'){
       continue
     }
-    //console.log('gcm', device.token)
+    //console.log('gcm', device.token, topic)
     tokens.push(device.token)
-    promises.push(sendToGCM(device.token, message))
+    if(topic === null){
+      promises.push(sendToGCM(device.token, message))
+    }else{
+      promises.push(sendToGCM(`/topics/$}${topic}`, message))
+    }
   }
 
   Promise.all(promises)
