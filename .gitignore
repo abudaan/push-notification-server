@@ -1,6 +1,8 @@
 node_modules/
-commands.txt
-conf/
-tests/build/
-.eslintrc
-gulpfile.js
+google-services.json
+server/sensitive.data
+server/conf/
+server/tests/build/
+server/payload-example.json
+client/pushtest1/android/
+client/pushtest1/index.android.js
