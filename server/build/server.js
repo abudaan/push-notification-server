@@ -52,6 +52,7 @@ app.get('/db', function (req, res) {
 });
 
 app.post('/token', function (req, res) {
+  console.log('[TOKEN]', req.body);
   _database2.default.storeToken(req.body).then(function (result) {
     return res.send(result);
   }, function (error) {

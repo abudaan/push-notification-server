@@ -39,6 +39,7 @@ app.get('/db', function(req, res){
 
 
 app.post('/token', function(req, res){
+  console.log('[TOKEN]', req.body)
   database.storeToken(req.body)
   .then(
     result => res.send(result),

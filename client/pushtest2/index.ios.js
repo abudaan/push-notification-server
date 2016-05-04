@@ -12,9 +12,11 @@ import React, {
 } from 'react-native';
 
 import PushNotification from 'react-native-push-notification'
-const url = 'http://192.168.0.10:5000/token'
-/
-class pushreact extends Component {
+const url = 'http://192.168.0.10:5000/token' // replace with the url of your own local server
+
+
+// name of the class must match with the name of the Android / iOS app
+class pushtest2 extends Component {
 
   constructor(props){
     super(props)
@@ -55,8 +57,8 @@ class pushreact extends Component {
         alert: true,
         badge: true,
         sound: true
-      },
-      senderID: "73986316761"
+      }
+      // senderID not necessary for iOS
     });
   }
 
@@ -91,5 +93,5 @@ const styles = StyleSheet.create({
 });
 
 
-
-AppRegistry.registerComponent('pushreact', () => pushreact);
+// name of the class must match with the name of the Android / iOS app
+AppRegistry.registerComponent('pushtest2', () => pushtest2);
