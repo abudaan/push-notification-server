@@ -1,7 +1,7 @@
 node_modules/
 google-services.json
 server/sensitive.data
-server/conf/
+server/conf/*
 server/tests/build/
 server/payload-example.json
 client/pushtest1/android/
