@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import ReactNavive from 'react-native'
+import ReactNative from 'react-native'
 let {
   AppRegistry,
   StyleSheet,
@@ -8,7 +8,7 @@ let {
   TouchableHighlight,
   PushNotificationIOS,
   AlertIOS,
-} = ReactNavive
+} = ReactNative
 
 
 let Button = React.createClass({
