@@ -12,6 +12,8 @@ let {
 import {status, json} from './js/fetch-helpers'
 
 
+const providerUrl = 'http://localhost:5000' // or replace with the url of your provider
+
 let Button = React.createClass({
   render: function() {
     return (
@@ -41,13 +43,8 @@ class pushtest1 extends Component {
       <View style={styles.container}>
 
         <Button
-          label={'check permissions'}
-          onPress={()=>{
-            PushNotificationIOS.checkPermissions((permissions) => {
-              this.state.messages.push(`permissions: ${JSON.stringify(permissions)}\n`)
-              this.setState(this.state)
-            })
-          }}
+          label={'send notification'}
+          onPress={this._sendNotification}
         />
 
         <Text style={styles.instructions}>
@@ -62,6 +59,10 @@ class pushtest1 extends Component {
     PushNotificationIOS.addEventListener('notification', this._onNotification.bind(this))
     PushNotificationIOS.addEventListener('register', this._onRegistration.bind(this))
     PushNotificationIOS.requestPermissions({badge: 1, sound: 1, alert: 1})
+    PushNotificationIOS.checkPermissions((permissions) => {
+      this.state.messages.push(`permissions: ${JSON.stringify(permissions)}\n`)
+      this.setState(this.state)
+    })
   }
 
 
@@ -100,7 +101,7 @@ class pushtest1 extends Component {
     this.setState(this.state)
 
     // store token in database of provider
-    fetch(url,{
+    fetch(providerUrl,{
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -115,7 +116,7 @@ class pushtest1 extends Component {
       this.setState(this.state)
     })
     .catch(error => {
-      this.state.messages.push(`error: ${error}\n`)
+      this.state.messages.push(`${error}\n`)
       this.setState(this.state)
     })
   }
