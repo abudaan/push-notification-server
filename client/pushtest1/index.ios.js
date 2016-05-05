@@ -9,6 +9,7 @@ let {
   PushNotificationIOS,
   AlertIOS,
 } = ReactNative
+import {status, json} from './js/fetch-helpers'
 
 
 let Button = React.createClass({
@@ -97,6 +98,26 @@ class pushtest1 extends Component {
   _onRegistration(token){
     this.state.messages.push(`token: ${token}\n`)
     this.setState(this.state)
+
+    // store token in database of provider
+    fetch(url,{
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({token: token, service: 'apn'})
+    })
+    .then(status)
+    .then(json)
+    .then(data => {
+      this.state.messages.push(`token: ${JSON.stringify(data)}\n`)
+      this.setState(this.state)
+    })
+    .catch(error => {
+      this.state.messages.push(`error: ${error}\n`)
+      this.setState(this.state)
+    })
   }
 
 
