@@ -58,10 +58,16 @@ Now you get a warning "Directory pushtest1 already exists. Continue?", type "yes
 During initialization you get several conflict warnings; always choose "n" for "do not overwrite"
 ![do not overwrite](./readme-images/react-native-init-conflict.jpg "do not overwrite")
 
-After the process has completed, we can open the file `./client/pushtest1/ios/pushtest1.xcodeproj` in Xcode. Unfortunately, you can not test push notifications in an emulator; you need to test on a physical iOS device, hence you need a paid developer account which will cost you $99 see [here](https://developer.apple.com/programs/how-it-works/).
+Once the process has completed, we can open the file `./client/pushtest1/ios/pushtest1.xcodeproj` in Xcode. Unfortunately, you can not test push notifications in an emulator; you need to test on a physical iOS device, hence you need a paid developer account which will cost you $99 see [here](https://developer.apple.com/programs/how-it-works/).
 
-After enrollment you can use your developer account to set up push notifications, follow the steps outlined [here](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/AddingCapabilities/AddingCapabilities.html#//apple_ref/doc/uid/TP40012582-CH26-SW6). In the last step the connection certificate and key are created. We need these to run our server so save them to your desktop or any other temporary location; we will get back to this later.
+After you are enrolled you can use your developer account to set up push notifications, follow the steps outlined [here](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/AddingCapabilities/AddingCapabilities.html#//apple_ref/doc/uid/TP40012582-CH26-SW6). In the last step the connection certificate and key are created. We need these to run our server, for now save them to your desktop or any other temporary location; we will get back to this later.
 
-Lets first test the client. Connect your device, select this device as build target and build the project. Note that you need to have wifi enabled because in testing mode the javascript will be streamed to the app via a http connecting. If all goes well you will see something similar to this:
+Let us first test the client. Connect your device, select this device as build target and build the project. Note that you need to have wifi enabled because in testing mode the javascript will be streamed to the app via a http connecting. If all goes well you will see something similar to this:
 
 ![ios screenshot 1](./readme-images/ios-screenshot-1-small.jpg "ios screenshot 1")
+
+The app registers itself at the APNs and gets back a token that identifies the device and the app: the provider uses this token as an 'address' to send the notifications to. The line that starts with 'permissions' tells us that the app allows an incoming notification to set a bagde number, to play a sound and to display an alert.
+
+The last line indicates is the result of an attempt of the app to connect to the provider, and since we haven't started our provider service yet, this yields a network error. So let's set up the server. First we need to convert the .p12 files that you've saved earlier to .pem files
+
+
