@@ -6,3 +6,4 @@ server/tests/build/
 server/payload-example.json
 client/pushtest1/android/
 client/pushtest1/index.android.js
+server/curl.txt

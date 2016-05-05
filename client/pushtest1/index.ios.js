@@ -12,7 +12,7 @@ let {
 import {status, json} from './js/fetch-helpers'
 
 
-const providerUrl = 'http://localhost:5000' // or replace with the url of your provider
+const providerUrl = 'http://192.168.0.10:5000' // or replace with the url of your provider
 
 let Button = React.createClass({
   render: function() {
@@ -99,6 +99,7 @@ class pushtest1 extends Component {
   _onRegistration(token){
     this.state.messages.push(`token: ${token}\n`)
     this.setState(this.state)
+    console.log(token)
 
     // store token in database of provider
     fetch(providerUrl,{
