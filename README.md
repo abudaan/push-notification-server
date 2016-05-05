@@ -58,7 +58,10 @@ Now you get a warning "Directory pushtest1 already exists. Continue?", type "yes
 During initialization you get several conflict warnings; always choose "n" for "do not overwrite"
 ![do not overwrite](./readme-images/react-native-init-conflict.jpg "do not overwrite")
 
-Now open the file `./client/pushtest1/ios/pushtest1.xcodeproj` in Xcode. The app needs to be configured for push notifications, follow the steps outlined [here](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/AddingCapabilities/AddingCapabilities.html#//apple_ref/doc/uid/TP40012582-CH26-SW6). In the last step we finally create the connection certificate and key that are needed to run our server, we will get back to that after we have finished setting up the client.
+After the process has completed, we can open the file `./client/pushtest1/ios/pushtest1.xcodeproj` in Xcode. Unfortunately, you can not test push notifications in an emulator; you need to test on a physical iOS device, hence you need a paid developer account which will cost you $99 see [here](https://developer.apple.com/programs/how-it-works/).
 
-Because you can not test push notification in an emulator, connect a physical iOS device, enable wifi, select this device as build target and build the project.
+After enrollment you can use your developer account to set up push notifications, follow the steps outlined [here](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/AddingCapabilities/AddingCapabilities.html#//apple_ref/doc/uid/TP40012582-CH26-SW6). In the last step the connection certificate and key are created. We need these to run our server so save them to your desktop or any other temporary location; we will get back to this later.
 
+Lets first test the client. Connect your device, select this device as build target and build the project. Note that you need to have wifi enabled because in testing mode the javascript will be streamed to the app via a http connecting. If all goes well you will see something similar to this:
+
+![ios screenshot 1](./readme-images/ios-screenshot-1-small.jpg "ios screenshot 1")
