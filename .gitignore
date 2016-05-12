@@ -10,3 +10,4 @@ server/curl.txt
 .DS_Store
 *.DS_Store
 npm-debug.log
+todo.md

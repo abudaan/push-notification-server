@@ -106,7 +106,7 @@ _apn2.default.start({
 });
 
 _gcm2.default.start({
-  key: 'conf/gcm.key', // should be a plain text file containing nothing but the key
+  key: 'conf/gcm.abu.key', // should be a plain text file containing nothing but the key
   url: 'https://gcm-http.googleapis.com/gcm/send' // not mandatory
 });
 

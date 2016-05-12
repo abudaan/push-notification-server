@@ -8,7 +8,7 @@ GCM and APNs only relay notifications, the notifications themselves have to be c
 
 You can send push notifications directly to a specific device, or to a specific topic. In the latter case the notification is sent to all devices that have subscribed to that specific topic. In this example we will focus on notifications that are directly sent to a device. To be able to do this, we need to have a unique device id, and we obtain this as soon as the app registers itself to GCM or APNs. Both services return a token that identifies the app running on that specific device.
 
-Our provider service stores these tokens in a PostgreSQL database. Besides the token we also store which service we use to relay the notification: GCM or APNs. You might think that all Apple devices use APNs and all Android devices use GCM, but you can use GCM for Apple devices as well. GCM has a wrapper for the APNs service so you can use GCM for all devices. The example "pushtest2" which we will discuss later shows how this is done.
+Our provider service stores these tokens in a PostgreSQL database. Besides the token we also store which service we use to relay the notification: GCM or APNs. You might think that all Apple devices use APNs and all Android devices use GCM, but you can use GCM for Apple devices as well. GCM has a wrapper for the APNs service so you can use GCM for all devices; we will discuss how this is done later.
 
 But first we have to set up the server and the database.
 
@@ -182,11 +182,11 @@ http://192.168.0.2:5000/message/?message=testing%20testing%201,2,3
 Now you should see a notification popup. If you lock your device and send another notification you will hear a sound and the message will appear on your lock screen.
 
 
-### Using GCM for Android and iOS
+### Using GCM for Android
 
-In the next example we are going to use GCM for both Android and Apple devices. To accomplish this we use a npm module called [react-native-push-notification](https://github.com/zo0r/react-native-push-notification). This module abstracts away the differences between Android and iOS.
+In the next example we are going to use GCM for Android and APNs for Apple devices. We use a npm module called [react-native-push-notification](https://github.com/zo0r/react-native-push-notification) that abstracts away the differences between Android and iOS. It contains some native Android code that make push notifications available for the react-native layer and it acts as a wrapper around the [PushNotificationIOS library](https://facebook.github.io/react-native/docs/pushnotificationios.html) from react-native. The API is a bit different as you can see if you compare the file `index.ios.js` with the same file in the "pushtest1" folder.
 
-First `cd` to the `client` folder then initialize react-native for the pushtest2 example:
+To set up the project `cd` to the `client` folder then initialize react-native for the pushtest2 example:
 
 ```
 $ cd ../client
@@ -194,6 +194,7 @@ $ react-native init pushtest2
 ```
 
 You will get the same warnings as described above, choose yes if you get the message "Directory pushtest2 already exists. Continue?" and choose "n" when prompted to overwrite an existing file. Follow all other steps as described in the previous section.
+
 
 
 
