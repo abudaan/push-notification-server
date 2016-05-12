@@ -19,11 +19,13 @@ app.use(bodyParser.urlencoded({
 
 
 app.get('/', function(req, res){
+  console.log('[GET] /')
   res.send('Hello World!')
 })
 
 
 app.get('/db', function(req, res){
+  console.log('[GET] /db')
   database.getTokens().then(
     tokens => {
       let html = 'Stored tokens:<br><ul>'

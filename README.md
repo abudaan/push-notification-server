@@ -4,11 +4,11 @@ Simple nodejs server using [express](http://expressjs.com/) webserver that can b
 
 APNs stands for Apple Push Notification Service and GCM for Google Cloud Messaging. These services enable us to send push notifications to Android and/or iOS and WatchOS apps. After you have configured and registered your app correctly a 2-way secure connection can be established between your app and the service.
 
-GCM and APNs only relay notifications, the notifications themselves have to be created (provided) by a service called the provider. A provider creates and sends a notification based on criteria that you decide yourself. This could be for instance an incoming chat message, an updated weather forecast, a software update, and so on. The provider in this project just sends generic messages.
+GCM and APNs only relay notifications, the notifications themselves have to be created (provided) by a service called the provider. A provider creates and sends a notification based on criteria that you can decide yourself. This could be for instance an incoming chat message, an updated weather forecast, a software update and so on. The provider in this project just sends generic messages.
 
-You can send push notifications directly to a specific device, or to a specific topic. In the latter case the notification is sent to all devices that have registered to that specific topic. In this example we focus on notifications that are directly sent to a device. To be able to do this, we need to have a unique device id, and we obtain this as soon as the app registers itself to GCM or APNs. Both services return a token that identifies the device and the app.
+You can send push notifications directly to a specific device, or to a specific topic. In the latter case the notification is sent to all devices that have subscribed to that specific topic. In this example we will focus on notifications that are directly sent to a device. To be able to do this, we need to have a unique device id, and we obtain this as soon as the app registers itself to GCM or APNs. Both services return a token that identifies the app running on that specific device.
 
-Our provider service stores these tokens in a PostgreSQL database. Besides the token we also store which service we use to relay the notification: GCM or APNs. You might think that all Apple devices use APNs and all Android devices use GCM, but you can use GCM for Apple devices as well. GCM has a wrapper for the APNs service so you can use GCM for all devices. You can find a example of this in the example "pushtest2" in the client folder
+Our provider service stores these tokens in a PostgreSQL database. Besides the token we also store which service we use to relay the notification: GCM or APNs. You might think that all Apple devices use APNs and all Android devices use GCM, but you can use GCM for Apple devices as well. GCM has a wrapper for the APNs service so you can use GCM for all devices. The example "pushtest2" which we will discuss later shows how this is done.
 
 But first we have to set up the server and the database.
 
@@ -26,7 +26,7 @@ $ npm install
 
 The server is written in es6, if you run the script `npm run watch` the es6 code gets automatically converted to es5 and stored in the `build` folder every time you change something in the es6 code.
 
-You can start the server by running this command from the `server` folder:
+You can start the server by running this command from within the `server` folder:
 
 ```
 $ node build/server.js
@@ -34,7 +34,7 @@ server listening at port 5000
 ```
 
 
-But before we can start the server we need to set up a database, in this database we store the device tokens of the registered devices. Assuming you have PostgreSQL server and psql client installed run:
+Before we can start the server we need to set up a database, in this database we store the device tokens of the registered devices. Assuming you have PostgreSQL server and psql client installed run:
 
 ```
 $ psql
@@ -44,7 +44,7 @@ Type "help" for help.
 your_username=#
 ```
 
-By default you are connected to your default database which has the same name as your user name. You can connect to another existing database using `\connect another_database`:
+By default you are connected to your default database which is named after your user name. You can connect to another existing database using `\connect another_database`:
 
 ```
 $ psql
@@ -104,7 +104,7 @@ echo $DATABASE_URL
 
 ```
 
-Note that if you want to run the server on your local computer you have to set the environment variable every time before you start the server. You might want to add it to your bash profile or simply hardcode the database address in `src/database.js` (not recommended though).
+Note that if you want to run the server on your local computer you have to set the environment variable every time you startup the terminal. You might want to add it to your bash profile or simply hardcode the database address in `src/database.js` (not recommended though).
 
 
 
@@ -112,7 +112,7 @@ Note that if you want to run the server on your local computer you have to set t
 
 We are going to setup the first test client. This example is iOS only but later we will set up another example that works with both iOS and Android devices.
 
-First `cd` to the `client` folder then initialize react-native:
+First `cd` to the `client` folder then initialize react-native for the pushtest1 example:
 
 ```
 $ cd ../client
@@ -129,7 +129,7 @@ Once the process has completed, we can open the file `./client/pushtest1/ios/pus
 
 After you are enrolled you can use your developer account to set up push notifications, follow the steps outlined [here](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/AddingCapabilities/AddingCapabilities.html#//apple_ref/doc/uid/TP40012582-CH26-SW6) up to the section "Installing a Client SSL Signing Identity on the Server"
 
-In this last section the connection certificate and key is created, we need these to set up a secure connection between our provider server and APNs. You can follow the steps described in this section but you only need to export the certificate. Export the certificate as a p12 file and save it with a meaningful name at an easy to find location on your hard disk. During this step you are asked to use set a password for the certificate, you can omit this. You will also be asked for you administrator password for security reasons. Next open a terminal and cd to the folder where you have save the certificate and run this command:
+In this last section the connection certificate and key is created, we need these to set up a secure connection between our provider and APNs. You can follow the steps described in this section but you only need to export the certificate. Export the certificate as a p12 file and save it with a meaningful name at an easy to find location on your hard disk. During this step you are asked to use set a password for the certificate, you can omit this. You will also be asked for your administrator password for security reasons. Next open a terminal and `cd` to the folder where you have save the certificate and run this command:
 
 ```
 $ openssl pkcs12 -in a_meaningful_name.p12 -out a_meaningful_name.pem -nodes -clcerts
@@ -145,9 +145,9 @@ apn.start({
 })
 ```
 
-If you haven't `npm run watch` already running, do this now and restart the server running the command `node build/server.js` from with the "server" folder.
+If you haven't `npm run watch` already running, do this now and restart the server with the command `node build/server.js` from within the "server" folder.
 
-Back to the client for the last 2 steps: open the file AppDelegate.m and at line 36 you have to change the ip address by the local ip address of the computer that runs Xcode, you can leave the port number at 8081:
+Now back to the client for the last 2 steps: open the file AppDelegate.m and at line 36 you have put the local (internal) ip address of the computer that runs Xcode, you can leave the port number at 8081:
 ```
 jsCodeLocation =
   [NSURL URLWithString:@"http://192.168.0.2:8081/index.ios.bundle?platform=ios&dev=true"]; // use your own local ip address
@@ -159,11 +159,42 @@ Next open the file `./client/pushtest1/index.ios.js` and at line 16 replace the 
 const providerUrl = 'http://192.168.0.2:5000'  // use your own local ip address
 ```
 
-Now we can test the client. Connect your device, select this device as build target and build the project. Note that you need to have wifi enabled because in debug / testing mode the javascript will be streamed to the app via a http connecting. If all goes well the app opens and shows a popup asking you to allow notifications, press "OK" and you will see something similar to this:
+Now we can test the client. Connect your device, select this device as build target and build the project. Note that you need to have wifi enabled because in debug / testing mode the javascript will be streamed to the app via a http connection. If all goes well the app opens and shows a popup asking you to allow notifications, press "OK" and you will see something similar to this:
 
 ![ios screenshot 1](./readme-images/ios-screenshot-1-small.jpg "ios screenshot 1")
 
-The app registers itself at the APNs and gets back a token that identifies the device and the app: the provider uses this token as an address to send the notifications to. The line that starts with "permissions" tells us that the app allows an incoming notification to set a bagde number, to play a sound and to display an alert.
+The app registers itself at the APNs and gets back a token that uniquely identifies the app on this specific device: the token is printed at the line that start with "[APNs]". The next line is the response from the provider.
 
-The last line is the result of an attempt of the app to connect to the provider, and since we haven't started our provider service yet, this yields a network error. So let's set up the server.
+The line that starts with "permissions" tells us which notifications are allowed. This might worry you because all values are set to 0 but that is because the permission where queried you pressed "OK" in the popup. The app requests permissions every time the app launches because the user might have revoked permissions.
+
+Finally it is time to actually send a notification to the app. This can be done with `curl` in the terminal or by posting a message via a browser.
+
+```
+$ curl -X POST -H "Content-Type: application/json" -d '{"message" : "testing testing 1,2,3"}' http://localhost:5000/message
+```
+As you can see the message is a simple json object. We can post the same message via a browser like this:
+
+```
+http://192.168.0.2:5000/message/?message=testing%20testing%201,2,3
+
+```
+
+Now you should see a notification popup. If you lock your device and send another notification you will hear a sound and the message will appear on your lock screen.
+
+
+### Using GCM for Android and iOS
+
+In the next example we are going to use GCM for both Android and Apple devices. To accomplish this we use a npm module called [react-native-push-notification](https://github.com/zo0r/react-native-push-notification). This module abstracts away the differences between Android and iOS.
+
+First `cd` to the `client` folder then initialize react-native for the pushtest2 example:
+
+```
+$ cd ../client
+$ react-native init pushtest2
+```
+
+You will get the same warnings as described above, choose yes if you get the message "Directory pushtest1 already exists. Continue?" and choose "n" when prompted to overwrite an existing file.
+
+
+
 

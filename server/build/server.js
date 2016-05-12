@@ -35,10 +35,12 @@ app.use(_bodyParser2.default.urlencoded({
 }));
 
 app.get('/', function (req, res) {
+  console.log('[GET] /');
   res.send('Hello World!');
 });
 
 app.get('/db', function (req, res) {
+  console.log('[GET] /db');
   _database2.default.getTokens().then(function (tokens) {
     var html = 'Stored tokens:<br><ul>';
     tokens.forEach(function (token) {
