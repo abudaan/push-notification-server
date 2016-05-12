@@ -2,3 +2,6 @@
 *
 # Except this file
 !.gitignore
+!apn.crt.pem
+!apn.key.pem
+!gcm.key

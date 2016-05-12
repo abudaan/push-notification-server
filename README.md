@@ -16,20 +16,32 @@ But first we have to set up the server and the database.
 
 ### Setting up the server and the database
 
-Clone the repository and `cd` into the `server` folder and run `npm install`:
+Clone the repository and `cd` into the `server` folder and run `npm install` to install all dependencies:
 
 ```
- $ git clone git@github.com:abudaan/push-notification-server.git
- $ cd push-notification-server/server
- $ npm install
+$ git clone git@github.com:abudaan/push-notification-server.git
+$ cd push-notification-server/server
+$ npm install
+```
+
+The server is written in es6, if you run the script `npm run watch` the es6 code gets automatically converted to es5 and stored in the `build` folder every time you change something in the es6 code.
+
+You can start the server by running this command from the `server` folder:
+
+```
+$ node build/server.js
+server listening at port 5000
 ```
 
 
-
-Next we set up a database, in this database we store the device tokens of the registered devices. Assuming you have PostgreSQL server and psql client installed run:
+But first we need to set up a database, in this database we store the device tokens of the registered devices. Assuming you have PostgreSQL server and psql client installed run:
 
 ```
- $ psql
+$ psql
+psql (9.5.2)
+Type "help" for help.
+
+your_username=#
 ```
 
 You can use your default database:
@@ -51,6 +63,31 @@ Now create a table tokens by running the file `table.tokens.sql`:
 ```\i table.tokens.sql```
 
 ![create table tokens](./readme-images/psql-3.jpg "create table tokens")
+
+
+Let's have a look at line 6 of the file `src/database.js`:
+
+```
+pg.connect(process.env.DATABASE_URL, function(error, client, done){
+  ...
+}))
+```
+
+The server gets address of the database from the environment variable DATABASE_URL. This way we can run the server on a platform like heroku. You set the environment variable like so:
+
+```
+export DATABASE_URL=postgres://username:password@localhost
+
+# test if it works
+echo $DATABASE_URL
+
+```
+
+Note that if you want to run the server on your local computer you have to set the environment variable every time before you start the server. You might want to add it to your bash profile or simply hardcode the database address in `src/database.js` (not recommended though).
+
+
+
+### Setting a client
 
 
 Before we can run the server we need to have a connection key and certificate to be able to connect to APNs, and a server key for connecting to GCM. We are going to setup the first test client, which is iOS only to get a connection key and certificate for APNs.
