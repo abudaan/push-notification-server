@@ -58,16 +58,12 @@ class pushtest1 extends Component {
   componentWillMount() {
     PushNotificationIOS.addEventListener('notification', this._onNotification.bind(this))
     PushNotificationIOS.addEventListener('register', this._onRegistration.bind(this))
-
-    // check if permissions are set and still active, if not present a popup
     PushNotificationIOS.checkPermissions((permissions) => {
       this.state.messages.push(`permissions: ${JSON.stringify(permissions)}\n`)
       this.setState(this.state)
-
-      if(permissions.badge === 0 || permissions.sound === 0 || permissions.alert === 0){
-        PushNotificationIOS.requestPermissions({badge: 1, sound: 1, alert: 1})
-      }
     })
+    // always request permissions, user may have revoked them
+    PushNotificationIOS.requestPermissions({badge: 1, sound: 1, alert: 1})
   }
 
 
