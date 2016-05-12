@@ -92,8 +92,8 @@ process.on('exit', function (){
 
 apn.start({
   // both the key and the certificate are in the .pem file so we can use the same file for both key and certificate
-  key: 'conf/pushtest1.pem',
-  cert: 'conf/pushtest1.pem',
+  key: 'conf/push.key.pem',
+  cert: 'conf/push.crt.pem',
 })
 
 gcm.start({

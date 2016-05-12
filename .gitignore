@@ -9,3 +9,4 @@ client/pushtest1/index.android.js
 server/curl.txt
 .DS_Store
 *.DS_Store
+npm-debug.log
