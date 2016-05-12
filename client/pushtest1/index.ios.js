@@ -118,7 +118,7 @@ class pushtest1 extends Component {
       this.setState(this.state)
     })
     .catch(error => {
-      this.state.messages.push(`deze hier dan ? ${error.toString()}\n`)
+      this.state.messages.push(`${error.toString()}\n`)
       this.setState(this.state)
     })
   }

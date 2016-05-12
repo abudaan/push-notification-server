@@ -24,7 +24,7 @@ class pushtest2 extends Component {
   }
 
   handleRegister(token) {
-    //console.log('TOKEN:', token);
+    console.log('TOKEN:', token);
     this.setState({notification: `registered, got token: ${token.token}`})
 
     fetch(url,{
@@ -33,7 +33,7 @@ class pushtest2 extends Component {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({token: token.token, os: 'ios'})
+        body: JSON.stringify({token: token.token, service: 'ios'})
     })
     .then((res) => {
       return res.json()
