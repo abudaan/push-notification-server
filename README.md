@@ -129,9 +129,3 @@ The app registers itself at the APNs and gets back a token that identifies the d
 The last line is the result of an attempt of the app to connect to the provider, and since we haven't started our provider service yet, this yields a network error. So let's set up the server. First we need to convert the .p12 files that you've saved earlier to .pem files
 
 
-
-
-Before running server:
-export DATABASE_URL=postgres://abudaan:a1bcD34@localhost
-
-
