@@ -12,7 +12,7 @@ let {
 import {status, json} from './js/fetch-helpers'
 
 
-const providerUrl = 'http://192.168.0.10:5000' // or replace with the url of your provider
+const providerUrl = 'http://192.168.0.10:5000' // replace by the url of your provider
 
 let Button = React.createClass({
   render: function() {
@@ -58,10 +58,15 @@ class pushtest1 extends Component {
   componentWillMount() {
     PushNotificationIOS.addEventListener('notification', this._onNotification.bind(this))
     PushNotificationIOS.addEventListener('register', this._onRegistration.bind(this))
-    PushNotificationIOS.requestPermissions({badge: 1, sound: 1, alert: 1})
+
+    // check if permissions are set and still active, if not present a popup
     PushNotificationIOS.checkPermissions((permissions) => {
       this.state.messages.push(`permissions: ${JSON.stringify(permissions)}\n`)
       this.setState(this.state)
+
+      if(permissions.badge === 0 || permissions.sound === 0 || permissions.alert === 0){
+        PushNotificationIOS.requestPermissions({badge: 1, sound: 1, alert: 1})
+      }
     })
   }
 

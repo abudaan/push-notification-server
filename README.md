@@ -34,7 +34,7 @@ server listening at port 5000
 ```
 
 
-But first we need to set up a database, in this database we store the device tokens of the registered devices. Assuming you have PostgreSQL server and psql client installed run:
+But before we can start the server we need to set up a database, in this database we store the device tokens of the registered devices. Assuming you have PostgreSQL server and psql client installed run:
 
 ```
 $ psql
@@ -127,9 +127,9 @@ During initialization you get several conflict warnings; always choose "n" for "
 
 Once the process has completed, we can open the file `./client/pushtest1/ios/pushtest1.xcodeproj` in Xcode. Unfortunately, you can not test push notifications in an emulator; you need to test on a physical iOS device, hence you need a paid developer account which will cost you $99 see [here](https://developer.apple.com/programs/how-it-works/).
 
-After you are enrolled you can use your developer account to set up push notifications, follow the steps outlined [here](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/AddingCapabilities/AddingCapabilities.html#//apple_ref/doc/uid/TP40012582-CH26-SW6) up to but not including the section "Installing a Client SSL Signing Identity on the Server"
+After you are enrolled you can use your developer account to set up push notifications, follow the steps outlined [here](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/AddingCapabilities/AddingCapabilities.html#//apple_ref/doc/uid/TP40012582-CH26-SW6) up to the section "Installing a Client SSL Signing Identity on the Server"
 
-In this last section the connection certificate and key is created, we need these to set up a secure connection between our provider server and APNs. You can follow the steps described in this section by you only need to export the certificate. Export the certificate as a p12 file and save it with a meaningful name at an easy to find location on your hard disk. Next open a terminal and cd to the folder where you have save the certificate and run this command:
+In this last section the connection certificate and key is created, we need these to set up a secure connection between our provider server and APNs. You can follow the steps described in this section but you only need to export the certificate. Export the certificate as a p12 file and save it with a meaningful name at an easy to find location on your hard disk. During this step you are asked to use set a password for the certificate, you can omit this. You will also be asked for you administrator password for security reasons. Next open a terminal and cd to the folder where you have save the certificate and run this command:
 
 ```
 $ openssl pkcs12 -in a_meaningful_name.p12 -out a_meaningful_name.pem -nodes -clcerts
@@ -145,18 +145,25 @@ apn.start({
 })
 ```
 
-In the last step you have to replace open the file AppDelegate.m and change the ip address in line 36 to the local ip address of the computer that runs Xcode, you can leave the port number at 8081:
+If you haven't `npm run watch` already running, do this now and restart the server running the command `node build/server.js` from with the "server" folder.
+
+Back to the client for the last 2 steps: open the file AppDelegate.m and at line 36 you have to change the ip address by the local ip address of the computer that runs Xcode, you can leave the port number at 8081:
 ```
 jsCodeLocation =
-  [NSURL URLWithString:@"http://192.168.0.2:8081/index.ios.bundle?platform=ios&dev=true"];
+  [NSURL URLWithString:@"http://192.168.0.2:8081/index.ios.bundle?platform=ios&dev=true"]; // use your own local ip address
 ```
 
-Now we can test the client. Connect your device, select this device as build target and build the project. Note that you need to have wifi enabled because in debug / testing mode the javascript will be streamed to the app via a http connecting. If all goes well you the app opens and shows a popup asking you to allow notifications, press "OK" and you will see something similar to this:
+Next open the file `./client/pushtest1/index.ios.js` and at line 16 replace the ip address to the ip address of the computer that is running the provider service, in this case it is the same address as we used above:
+
+```
+const providerUrl = 'http://192.168.0.2:5000'  // use your own local ip address
+```
+
+Now we can test the client. Connect your device, select this device as build target and build the project. Note that you need to have wifi enabled because in debug / testing mode the javascript will be streamed to the app via a http connecting. If all goes well the app opens and shows a popup asking you to allow notifications, press "OK" and you will see something similar to this:
 
 ![ios screenshot 1](./readme-images/ios-screenshot-1-small.jpg "ios screenshot 1")
 
 The app registers itself at the APNs and gets back a token that identifies the device and the app: the provider uses this token as an address to send the notifications to. The line that starts with "permissions" tells us that the app allows an incoming notification to set a bagde number, to play a sound and to display an alert.
 
-The last line is the result of an attempt of the app to connect to the provider, and since we haven't started our provider service yet, this yields a network error. So let's set up the server. First we need to convert the .p12 files that you've saved earlier to .pem files
-
+The last line is the result of an attempt of the app to connect to the provider, and since we haven't started our provider service yet, this yields a network error. So let's set up the server.
 
