@@ -98,12 +98,12 @@ class pushtest1 extends Component {
 
 
   _onRegistration(token){
-    this.state.messages.push(`token: ${token}\n`)
+    this.state.messages.push(`[APNs] ${token}\n`)
     this.setState(this.state)
     console.log(token)
 
     // store token in database of provider
-    fetch(providerUrl,{
+    fetch(providerUrl + '/token',{
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -114,11 +114,11 @@ class pushtest1 extends Component {
     .then(status)
     .then(json)
     .then(data => {
-      this.state.messages.push(`token: ${JSON.stringify(data)}\n`)
+      this.state.messages.push(`[provider] ${JSON.stringify(data)}\n`)
       this.setState(this.state)
     })
     .catch(error => {
-      this.state.messages.push(`${error}\n`)
+      this.state.messages.push(`deze hier dan ? ${error.toString()}\n`)
       this.setState(this.state)
     })
   }
