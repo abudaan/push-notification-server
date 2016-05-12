@@ -44,28 +44,49 @@ Type "help" for help.
 your_username=#
 ```
 
-You can use your default database:
+By default you are connected to your default database which has the same name as your user name. You can connect to another existing database using `\connect another_database`:
 
-```\connect {your_username}```
+```
+$ psql
+psql (9.5.2)
+Type "help" for help.
 
-![default database](./readme-images/psql-1.jpg "default database")
-
-
-Alternately you can create a new database with SQL:
-
-```CREATE DATABASE your_new_database```
-
-![new database](./readme-images/psql-2.jpg "new database")
-
-
-Now create a table tokens by running the file `table.tokens.sql`:
-
-```\i table.tokens.sql```
-
-![create table tokens](./readme-images/psql-3.jpg "create table tokens")
+your_username=# \connect another_database
+You are now connected to database "another_database" as user "your_username".
+another_database=#
+```
 
 
-Let's have a look at line 6 of the file `src/database.js`:
+Alternately you can create a new database for this project with SQL:
+
+
+```
+$ psql
+psql (9.5.2)
+Type "help" for help.
+
+your_username=# CREATE DATABASE your_new_database;
+CREATE DATABASE
+your_username=# \connect your_new_database
+You are now connected to database "your_new_database" as user "your_username".
+your_new_database=#
+```
+
+
+Next we create the table tokens where we will store the tokens of the devices by running the file `table.tokens.sql`:
+
+```
+$ psql
+psql (9.5.2)
+Type "help" for help.
+
+your_new_database=# \i table.tokens.sql
+CREATE TABLE
+your_new_database=#
+```
+
+
+Now that we have set up the database let's have a look at line 6 of the file `src/database.js`:
 
 ```
 pg.connect(process.env.DATABASE_URL, function(error, client, done){
@@ -73,7 +94,7 @@ pg.connect(process.env.DATABASE_URL, function(error, client, done){
 }))
 ```
 
-The server gets address of the database from the environment variable DATABASE_URL. This way we can run the server on a platform like heroku. You set the environment variable like so:
+This means that server retrieves the address of the database from an environment variable named DATABASE_URL. This way we can run the server on a platform like heroku. You set the environment variable like so:
 
 ```
 export DATABASE_URL=postgres://username:password@localhost
@@ -114,7 +135,7 @@ openssl pkcs12 -in path.p12 -out newfile.crt.pem -clcerts -nokeys
 openssl pkcs12 -in path.p12 -out newfile.key.pem -nocerts -nodes
 
 
-Replace the ip address in line 36 by your the ip address of the computer that runs Xcode, the port number should be 8081:
+In the file AppDelegate.m replace the ip address in line 36 by your the ip address of the computer that runs Xcode, the port number should be 8081:
 ```
 jsCodeLocation =
   [NSURL URLWithString:@"http://192.168.0.12:8081/index.ios.bundle?platform=ios&dev=true"];
