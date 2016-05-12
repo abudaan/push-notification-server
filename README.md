@@ -87,16 +87,15 @@ Note that if you want to run the server on your local computer you have to set t
 
 
 
-### Setting a client
+### Setting up a client
 
+We are going to setup the first test client. This example is iOS only but later we will set up another example that works with both iOS and Android devices.
 
-Before we can run the server we need to have a connection key and certificate to be able to connect to APNs, and a server key for connecting to GCM. We are going to setup the first test client, which is iOS only to get a connection key and certificate for APNs.
-
-First ```cd``` to the 'client' folder then initialize react-native:
+First `cd` to the `client` folder then initialize react-native:
 
 ```
- $ cd ../client
- $ react-native init pushtest1
+$ cd ../client
+$ react-native init pushtest1
 ```
 
 Now you get a warning "Directory pushtest1 already exists. Continue?", type "yes" and press enter.
@@ -117,7 +116,8 @@ openssl pkcs12 -in path.p12 -out newfile.key.pem -nocerts -nodes
 
 Replace the ip address in line 36 by your the ip address of the computer that runs Xcode, the port number should be 8081:
 ```
-jsCodeLocation = [NSURL URLWithString:@"http://192.168.0.12:8081/index.ios.bundle?platform=ios&dev=true"];
+jsCodeLocation =
+  [NSURL URLWithString:@"http://192.168.0.12:8081/index.ios.bundle?platform=ios&dev=true"];
 ```
 
 Let us first test the client. Connect your device, select this device as build target and build the project. Note that you need to have wifi enabled because in testing mode the javascript will be streamed to the app via a http connecting. If all goes well you will see something similar to this:
