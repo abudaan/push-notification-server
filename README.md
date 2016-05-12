@@ -170,7 +170,7 @@ The line that starts with "permissions" tells us which notifications are allowed
 Finally it is time to actually send a notification to the app. This can be done with `curl` in the terminal or by posting a message via a browser.
 
 ```
-$ curl -X POST -H "Content-Type: application/json" -d '{"message" : "testing testing 1,2,3"}' http://localhost:5000/message
+$ curl -X POST -H "Content-Type: application/json" -d '{"message" : "testing testing 1,2,3"}' http://192.168.0.2:5000/message
 ```
 As you can see the message is a simple json object. We can post the same message via a browser like this:
 
