@@ -33,7 +33,7 @@ class pushtest2 extends Component {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({token: token.token, service: 'ios'})
+        body: JSON.stringify({token: token.token, service: 'gcm'})
     })
     .then((res) => {
       return res.json()

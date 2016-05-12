@@ -193,7 +193,8 @@ $ cd ../client
 $ react-native init pushtest2
 ```
 
-You will get the same warnings as described above, choose yes if you get the message "Directory pushtest1 already exists. Continue?" and choose "n" when prompted to overwrite an existing file.
+You will get the same warnings as described above, choose yes if you get the message "Directory pushtest2 already exists. Continue?" and choose "n" when prompted to overwrite an existing file. Follow all other steps as described in the previous section.
+
 
 
 
