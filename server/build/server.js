@@ -98,8 +98,9 @@ process.on('exit', function () {
 });
 
 _apn2.default.start({
-  key: 'conf/apn.key.pem',
-  cert: 'conf/apn.crt.pem'
+  // both the key and the certificate are in the .pem file so we can use the same file for both key and certificate
+  key: 'conf/apn.push.pem',
+  cert: 'conf/apn.push.pem'
 });
 
 _gcm2.default.start({

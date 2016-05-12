@@ -2,7 +2,7 @@
 
 Simple nodejs server using [express](http://expressjs.com/) webserver that can be used as provider for both [GCM](https://developers.google.com/cloud-messaging/) and [APNs](https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/ApplePushService.html).
 
-APNs stands for Apple Push Notification Service and GCM for Google Cloud Messaging. These services enable us to send push notifications to Android and/or iOS and WatchOS apps. After you have registered your app a 2-way secure connection can be established between your app and the service.
+APNs stands for Apple Push Notification Service and GCM for Google Cloud Messaging. These services enable us to send push notifications to Android and/or iOS and WatchOS apps. After you have configured and registered your app correctly a 2-way secure connection can be established between your app and the service.
 
 GCM and APNs only relay notifications, the notifications themselves have to be created (provided) by a service called the provider. A provider creates and sends a notification based on criteria that you decide yourself. This could be for instance an incoming chat message, an updated weather forecast, a software update, and so on. The provider in this project just sends generic messages.
 
@@ -127,21 +127,31 @@ During initialization you get several conflict warnings; always choose "n" for "
 
 Once the process has completed, we can open the file `./client/pushtest1/ios/pushtest1.xcodeproj` in Xcode. Unfortunately, you can not test push notifications in an emulator; you need to test on a physical iOS device, hence you need a paid developer account which will cost you $99 see [here](https://developer.apple.com/programs/how-it-works/).
 
-After you are enrolled you can use your developer account to set up push notifications, follow the steps outlined [here](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/AddingCapabilities/AddingCapabilities.html#//apple_ref/doc/uid/TP40012582-CH26-SW6).
+After you are enrolled you can use your developer account to set up push notifications, follow the steps outlined [here](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/AddingCapabilities/AddingCapabilities.html#//apple_ref/doc/uid/TP40012582-CH26-SW6) up to but not including the section "Installing a Client SSL Signing Identity on the Server"
 
-In the last step "Installing a Client SSL Signing Identity on the Server" the connection certificate and key that we need for our server are created. We need these to run our server, for now save them to your desktop or any other temporary location; we will get back to this later.
+In this last section the connection certificate and key is created, we need these to set up a secure connection between our provider server and APNs. You can follow the steps described in this section by you only need to export the certificate. Export the certificate as a p12 file and save it with a meaningful name at an easy to find location on your hard disk. Next open a terminal and cd to the folder where you have save the certificate and run this command:
 
-openssl pkcs12 -in path.p12 -out newfile.crt.pem -clcerts -nokeys
-openssl pkcs12 -in path.p12 -out newfile.key.pem -nocerts -nodes
+```
+$ openssl pkcs12 -in a_meaningful_name.p12 -out a_meaningful_name.pem -nodes -clcerts
+```
 
+Copy the .pem file to the folder `./server/conf/` and edit the code from line 93 in the file `./server/src/server.js`. You need to replace the value of key and cert with the name you have chosen for the .pem file.
 
-In the file AppDelegate.m replace the ip address in line 36 by your the ip address of the computer that runs Xcode, the port number should be 8081:
+```
+apn.start({
+  // both the key and the certificate are in the .pem file so we can use the same file for both key and certificate
+  key: 'conf/apn.pem',
+  cert: 'conf/apn.pem',
+})
+```
+
+In the last step you have to replace open the file AppDelegate.m and change the ip address in line 36 to the local ip address of the computer that runs Xcode, you can leave the port number at 8081:
 ```
 jsCodeLocation =
-  [NSURL URLWithString:@"http://192.168.0.12:8081/index.ios.bundle?platform=ios&dev=true"];
+  [NSURL URLWithString:@"http://192.168.0.2:8081/index.ios.bundle?platform=ios&dev=true"];
 ```
 
-Let us first test the client. Connect your device, select this device as build target and build the project. Note that you need to have wifi enabled because in testing mode the javascript will be streamed to the app via a http connecting. If all goes well you will see something similar to this:
+Now we can test the client. Connect your device, select this device as build target and build the project. Note that you need to have wifi enabled because in debug / testing mode the javascript will be streamed to the app via a http connecting. If all goes well you the app opens and shows a popup asking you to allow notifications, press "OK" and you will see something similar to this:
 
 ![ios screenshot 1](./readme-images/ios-screenshot-1-small.jpg "ios screenshot 1")
 
