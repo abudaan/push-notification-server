@@ -1,6 +1,6 @@
 ### Push Notification Server
 
-Simple nodejs server using [express](http://expressjs.com/) webserver that can be used as provider for both [GCM](https://developers.google.com/cloud-messaging/) and [APNs](https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/ApplePushService.html).
+Simple nodejs server using [express](http://expressjs.com/) webserver that can be used as provider of push notifications for both [GCM](https://developers.google.com/cloud-messaging/) and [APNs](https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/ApplePushService.html).
 
 APNs stands for Apple Push Notification Service and GCM for Google Cloud Messaging. These services enable us to send push notifications to Android and/or iOS and WatchOS apps. After you have configured and registered your app correctly a 2-way secure connection can be established between your app and the service.
 
