@@ -14,7 +14,8 @@ import {status, json} from './js/fetch-helpers'
 
 
 import PushNotification from 'react-native-push-notification'
-const url = 'http://192.168.0.10:5000' // replace with the url of your own local server
+const providerURL = 'http://192.168.0.10:5000' // replace with the url of your own local server
+const senderID = '' // use the senderID of your own project number, see the Google Developer Console (https://console.developers.google.com/)
 
 
 // name of the class must match with the name of the Android / iOS app
@@ -30,7 +31,7 @@ class pushtest2 extends Component {
     this.state.messages.push(`registered, got token: ${token.token}\n`)
     this.setState(this.state)
 
-    fetch(url + '/token',{
+    fetch(providerURL + '/token',{
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -69,7 +70,7 @@ class pushtest2 extends Component {
         badge: true,
         sound: true
       },
-      senderID: '1075174218485' // replace senderID with your own project number as you can find in your Google Developer Console (https://console.developers.google.com/)
+      senderID
     })
   }
 

@@ -108,7 +108,9 @@ Note that if you want to run the server on your local computer you have to set t
 
 
 
+
 ### Setting up a client
+
 
 We are going to setup the first test client. This example is iOS only but later we will set up another example that works with both iOS and Android devices.
 
@@ -182,9 +184,9 @@ http://192.168.0.2:5000/message/?message=testing%20testing%201,2,3
 Now you should see a notification popup. If you lock your device and send another notification you will hear a sound and the message will appear on your lock screen.
 
 
-### Using GCM for Android
+### Using react-native-push-notification for Android and iOS
 
-In the next example we are going to use GCM for Android and APNs for Apple devices. We use a npm module called [react-native-push-notification](https://github.com/zo0r/react-native-push-notification) that abstracts away the differences between Android and iOS. It contains some native Android code that make push notifications available for the react-native layer and it acts as a wrapper around the [PushNotificationIOS library](https://facebook.github.io/react-native/docs/pushnotificationios.html) from react-native. The API is a bit different as you can see if you compare the file `index.ios.js` with the same file in the "pushtest1" folder.
+In the next example we are going to use GCM for Android and APNs for Apple devices. We use a npm module called [react-native-push-notification](https://github.com/zo0r/react-native-push-notification) that abstracts away the differences between Android and iOS. It contains some native Android code that makes push notifications available for the react-native layer and it acts as a wrapper around the [PushNotificationIOS library](https://facebook.github.io/react-native/docs/pushnotificationios.html) from react-native. The API is a bit different as you can see if you compare the file `index.ios.js` with the same file in the "pushtest1" folder.
 
 To set up the project `cd` to the `client` folder then initialize react-native for the pushtest2 example:
 
@@ -194,6 +196,88 @@ $ react-native init pushtest2
 ```
 
 You will get the same warnings as described above, choose yes if you get the message "Directory pushtest2 already exists. Continue?" and choose "n" when prompted to overwrite an existing file. Follow all other steps as described in the previous section.
+
+
+Now we are going to set up the Android client. First we need to register the app with Google Developers Console, follow [this link](https://developers.google.com/mobile/add?platform=android&cntapi=gcm). You have to choose a name for your app, you can pick any name you want except the name of an existing app. The Android package name should match the package of the `MainActivity.java` file. In this case the package name is `com.push`.
+
+Next you may choose a region, then click the green button "continue to Choose and configure services". In the screen that follows select "Cloud Messaging" and click the big blue button "Enable Google Cloud Messaging". You now see a page that shows the credentials that we need to set up the Android client and the connection of our provider with GCM.
+
+![GCM success](./readme-images/GCM-1.jpg "GCM success")
+
+First copy the Server API Key to a new file and save it with a meaningful name in the folder `./server/conf`. Open the file `./server/src/server.js` and edit line 102. For instance if you have saved the Server API key in a file named "pushtest2.gcm.key", line 102 should read:
+
+```
+gcm.start({
+  key: 'conf/pushtest2.gcm.key', // should be a plain text file containing nothing but the key
+  url: 'https://gcm-http.googleapis.com/gcm/send' // not mandatory
+})
+```
+
+Next copy the Sender ID and store it in the `senderID' variable in the file `./client/pushtest2/index.android.js`:
+
+```
+import PushNotification from 'react-native-push-notification'
+const providerURL = 'http://192.168.0.10:5000'
+const senderID = 'your_sender_id'
+```
+
+Change the value of `providerURL` to the url of your provider. I assume that you are running the provider on your own computer so use its local ip address.
+
+Scroll down to the bottom of the page where you will find a button "Generate configuration files", click this button and on the screen that follows click "Download google-services.json". Save this file in the folder `./client/pushtest2/android/app`.
+
+All credentials are in place now. Open a terminal and `cd` to the "server" folder, rebuild and start the server by typing:
+
+```
+$ npm run provider
+```
+
+Open another terminal ([tmux](https://tmux.github.io/) is very handy for this) and start react-native:
+
+```
+$ react-native start
+```
+
+And finally build the Android app:
+
+```
+$ react-native run-android
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

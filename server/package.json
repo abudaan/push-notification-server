@@ -9,6 +9,7 @@
     "babel-node": "babel-node",
     "build": "babel src -d build",
     "watch": "babel --watch src -d build",
+    "provider": "npm run build && node ./build/server.js",
     "watchtest": "watchify tests/src/test-web.js -t babelify -o tests/build/test-web.js --debug --verbose"
   },
   "babel": {

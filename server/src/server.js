@@ -99,7 +99,7 @@ apn.start({
 })
 
 gcm.start({
-  key: 'conf/gcm.abu.key', // should be a plain text file containing nothing but the key
+  key: 'conf/gcm.abu2.key', // should be a plain text file containing nothing but the key
   url: 'https://gcm-http.googleapis.com/gcm/send' // not mandatory
 })
 
