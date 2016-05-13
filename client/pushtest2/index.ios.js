@@ -36,7 +36,7 @@ class pushtest2 extends Component {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({token: token.token, service: 'gcm'})
+        body: JSON.stringify({token: token.token, service: 'apn'})
     })
     .then(status)
     .then(json)
