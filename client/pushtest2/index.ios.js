@@ -9,10 +9,12 @@ import React, {
   StyleSheet,
   Text,
   View
-} from 'react-native';
+} from 'react-native'
+import {status, json} from './js/fetch-helpers'
+
 
 import PushNotification from 'react-native-push-notification'
-const url = 'http://192.168.0.10:5000/token' // replace with the url of your own local server
+const url = 'http://192.168.0.10:5000' // replace with the url of your own local server
 
 
 // name of the class must match with the name of the Android / iOS app
@@ -20,36 +22,45 @@ class pushtest2 extends Component {
 
   constructor(props){
     super(props)
-    this.state = {notification: 'waiting...'}
+    this.state = {messages: ['registering...\n']}
   }
 
   handleRegister(token) {
-    console.log('TOKEN:', token);
-    this.setState({notification: `registered, got token: ${token.token}`})
+    console.log('TOKEN:', token)
+    this.state.messages.push(`registered, got token: ${token.token}\n`)
+    this.setState(this.state)
 
-    fetch(url,{
+    fetch(url + '/token',{
         method: 'POST',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({token: token.token, service: 'apn'}) // we can use gcm here as well
+        body: JSON.stringify({token: token.token, service: 'gcm'})
     })
-    .then((res) => {
-      return res.json()
+    .then(status)
+    .then(json)
+    .then(data => {
+      console.log(data)
+      this.state.messages.push(`${data.message}\n`)
+      this.setState(this.state)
     })
-    .then((data) => {
-      this.setState({notification: JSON.stringify(data)})
+    .catch(error => {
+      console.log(error)
+      this.state.messages.push(`${error.toString()}\n`)
+      this.setState(this.state)
     })
   }
 
   handleNotification(notification) {
     console.log('NOTIFICATION:', notification)
-    this.setState({notification: notification.message})
+    this.state.messages.push(`${notification.message}\n`)
+    this.setState(this.state)
   }
 
-
   componentDidMount() {
+    this.state.messages.push('mount\n')
+    this.setState(this.state)
     PushNotification.configure({
       onNotification: this.handleNotification.bind(this),
       onRegister: this.handleRegister.bind(this),
@@ -57,28 +68,29 @@ class pushtest2 extends Component {
         alert: true,
         badge: true,
         sound: true
-      }
-      // senderID not necessary for iOS
-    });
+      },
+      //senderID not necessary for iOS
+    })
   }
 
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>
-          {this.state.notification}
+        <Text style={styles.instructions}>
+          {this.state.messages}
         </Text>
       </View>
-    );
+    )
   }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
     backgroundColor: '#F5FCFF',
+    padding: 10,
   },
   welcome: {
     fontSize: 20,
@@ -86,12 +98,24 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   instructions: {
-    textAlign: 'center',
+    fontSize: 20,
+    textAlign: 'left',
     color: '#333333',
-    marginBottom: 5,
+    marginBottom: 0,
   },
-});
+  button: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonLabel: {
+    padding: 4,
+    color: 'blue',
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderColor: 'blue',
+  },
+})
 
 
 // name of the class must match with the name of the Android / iOS app
-AppRegistry.registerComponent('pushtest2', () => pushtest2);
+AppRegistry.registerComponent('pushtest2', () => pushtest2)
