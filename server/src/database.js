@@ -28,8 +28,7 @@ function getTokens(){
 
 
 function storeToken(data){
-  let token = data.token
-  let service = data.service
+  let {token, service, key, secret, endpoint} = data
   // Object.keys(data).forEach(function(key){
   //   console.log(key, ':', data[key])
   // })
@@ -49,7 +48,7 @@ function storeToken(data){
           console.error('[DATABASE]', error)
           reject({error})
         }else if(result.rowCount === 0){
-          client.query(`INSERT INTO tokens (token, service) VALUES ('${token}', '${service}')`, function(error, result){
+          client.query(`INSERT INTO tokens (token, service, key, secret, endpoint) VALUES ('${token}', '${service}', '${key}', '${secret}', '${endpoint}')`, function(error, result){
             if(error){
               error = error.toString()
               console.error('[DATABASE]', error)

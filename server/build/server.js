@@ -20,6 +20,10 @@ var _apn = require('./apn');
 
 var _apn2 = _interopRequireDefault(_apn);
 
+var _web = require('./web');
+
+var _web2 = _interopRequireDefault(_web);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var app = (0, _express2.default)();
@@ -67,6 +71,7 @@ function postMessage(message, res) {
   console.log('[NOTIFICATION]', message);
 
   _database2.default.getTokens().then(function (tokens) {
+    _web2.default.pushNotifications(tokens, message);
     _gcm2.default.pushNotifications(tokens, message);
     _apn2.default.pushNotifications(tokens, message);
     res.send({ message: 'notification pushed to ' + tokens.length + ' devices' });
@@ -108,6 +113,10 @@ _apn2.default.start({
 _gcm2.default.start({
   key: 'conf/gcm.abu2.key', // should be a plain text file containing nothing but the key
   url: 'https://gcm-http.googleapis.com/gcm/send' // not mandatory
+});
+
+_web2.default.start({
+  key: 'conf/gcm.abu2.key'
 });
 
 var port = process.env.PORT || 5000;

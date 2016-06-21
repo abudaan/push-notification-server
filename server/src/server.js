@@ -4,6 +4,7 @@ import bodyParser from 'body-parser'
 import database from './database'
 import gcm from './gcm'
 import apn from './apn'
+import web from './web'
 
 let app = express()
 
@@ -56,6 +57,7 @@ function postMessage(message, res){
 
   database.getTokens().then(
     tokens => {
+      web.pushNotifications(tokens, message)
       gcm.pushNotifications(tokens, message)
       apn.pushNotifications(tokens, message)
       res.send({message: `notification pushed to ${tokens.length} devices`})
@@ -101,6 +103,10 @@ apn.start({
 gcm.start({
   key: 'conf/gcm.abu2.key', // should be a plain text file containing nothing but the key
   url: 'https://gcm-http.googleapis.com/gcm/send' // not mandatory
+})
+
+web.start({
+  key: 'conf/gcm.abu2.key'
 })
 
 let port = process.env.PORT || 5000
