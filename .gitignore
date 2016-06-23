@@ -11,3 +11,5 @@ server/curl.txt
 *.DS_Store
 npm-debug.log
 todo.md
+server/curl_test1.sh
+server/test.json

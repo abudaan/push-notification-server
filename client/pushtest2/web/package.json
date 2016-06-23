@@ -1,0 +1,47 @@
+{
+  "name": "push-react-web",
+  "private": false,
+  "devDependencies": {
+    "babel-cli": "*",
+    "babel-eslint": "*",
+    "babel-plugin-transform-class-properties": "*",
+    "babel-plugin-transform-decorators-legacy": "*",
+    "babel-polyfill": "*",
+    "babel-preset-es2015": "*",
+    "babel-preset-react": "*",
+    "babel-preset-stage-0": "*",
+    "babelify": "*",
+    "browserify": "*",
+    "eslint": "*",
+    "eslint-plugin-babel": "*",
+    "eslint-plugin-react": "*",
+    "exorcist": "*",
+    "uglify": "*",
+    "watchify": "*"
+  },
+  "engines": {
+    "node": "0.10.x"
+  },
+  "babel": {
+    "plugins": [
+      "transform-class-properties",
+      "transform-decorators-legacy"
+    ],
+    "presets": [
+      "react",
+      "es2015",
+      "stage-0"
+    ]
+  },
+  "dependencies": {
+    "isomorphic-fetch": "*",
+    "react": "*",
+    "react-dom": "*",
+    "flux": "*"
+  },
+  "scripts": {
+    "watch": "watchify src/index.js -t [ babelify ] -o build/app.js --debug --verbose",
+    "build": "browserify js/index.js -t [ babelify ] --debug | exorcist build/app.js.map | uglifyjs -c > build/app.js",
+    "babel": "npm run babel-node"
+  }
+}
